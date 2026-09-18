@@ -4,7 +4,7 @@ Feature identity: **FSQUINT-01**
 
 Date: **2026-09-18**
 
-Status: **implementation active; FQ0–FQ3 qualified locally; prerelease publication next**
+Status: **implementation active; FQ0–FQ4 complete; consumer migrations and update qualification active**
 
 Repository: **FS-GG/FsQuint**, public. Package names checked; publication pending.
 
@@ -280,7 +280,7 @@ authority. Reuse existing evidence instead of restarting the completed Choreo pr
 - [x] FQ1 generic core and decoder/value contract qualified.
 - [x] FQ2 independent example and production-driver interface qualified.
 - [x] FQ3 optional tooling matrix and failure behavior qualified.
-- [ ] FQ4 immutable public prerelease installed anonymously.
+- [x] FQ4 immutable public prerelease installed anonymously.
 - [ ] FQ5 SDD delegates without duplicate generic algorithms.
 - [ ] FQ6 Coordination consumes packages with existing evidence preserved.
 - [ ] FQ7 actual downstream update, rollback and stable public consumption qualified.
@@ -347,3 +347,16 @@ succeeded. This is authentication evidence only, not a publication receipt.
 Migration spikes: SDD's existing seven replay tests pass through the facade; Coordination's
 78 Host tests pass after removing the linked engine and using the package driver API.
 These are local candidate checks, not completion of FQ5/FQ6 public consumption.
+
+FQ4: both preview packages and symbols were pushed by
+[release 35319721519](https://github.com/FS-GG/FsQuint/actions/runs/35319721519).
+Its post-push readback failed on an HTTP redirect. PR3 repaired credential handling;
+[read-only recovery 35320082755](https://github.com/FS-GG/FsQuint/actions/runs/35320082755)
+verified matching served payloads, immutable tag source identity and a clean anonymous
+queue consumer. No published version or tag was replaced.
+
+FQ7 upstream defect reproduced against served preview 1: an unpaired UTF-16 surrogate
+was accepted and fingerprinted identically to U+FFFD through UTF-8 replacement fallback.
+The regression fails on preview 1; the fix rejects malformed strings across text, record
+keys, state bindings and trace provenance. Valid Unicode/canonical identities are unchanged.
+Preview 2 carries the fix; downstream update and stable qualification remain outstanding.

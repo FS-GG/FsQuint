@@ -460,4 +460,75 @@ for i, value in List.indexed legacyValues do
     check (sprintf "original SDD fingerprint %d" i) (fingerprint = expected.GetProperty("fingerprint").GetString())
 
 vectors.Dispose()
+// Regression reproduced against the served 0.1.0-preview.1 package: malformed
+// UTF-16 and U+FFFD collided after Encoding.UTF8's replacement fallback.
+let invalidUnicode = String(char 0xD800, 1)
+
+let invalidState =
+    {
+        Identity = ""
+        Bindings = [ "x", Text invalidUnicode ]
+    }
+
+check "invalid UTF16 text cannot acquire an identity" (QuintReplay.stateFingerprint invalidState |> Result.isError)
+check "invalid UTF16 record key rejected" (QuintReplay.encodeValue (Record [ invalidUnicode, Null ]) |> Result.isError)
+
+check
+    "invalid UTF16 binding rejected"
+    (QuintReplay.stateFingerprint
+        { invalidState with
+            Bindings = [ invalidUnicode, Null ]
+        }
+     |> Result.isError)
+
+check "valid replacement character remains supported" (QuintReplay.encodeValue (Text "�") |> Result.isOk)
+
+check
+    "invalid UTF16 seed rejected"
+    (QuintReplay.traceFingerprint
+        { trace with
+            Environment =
+                { trace.Environment with
+                    Seed = invalidUnicode
+                }
+        }
+     |> Result.isError)
+
+check
+    "invalid UTF16 source rejected"
+    (QuintReplay.traceFingerprint
+        { trace with
+            Steps =
+                [
+                    { trace.Steps.Head with
+                        Source = { source with Path = invalidUnicode }
+                    }
+                ]
+        }
+     |> Result.isError)
+
+check
+    "invalid UTF16 action rejected"
+    (QuintReplay.traceFingerprint
+        { trace with
+            Steps =
+                [
+                    { trace.Steps.Head with
+                        Action = invalidUnicode
+                    }
+                ]
+        }
+     |> Result.isError)
+
+check
+    "invalid UTF16 bound name rejected"
+    (QuintReplay.traceFingerprint
+        { trace with
+            Environment =
+                { trace.Environment with
+                    Bounds = [ invalidUnicode, 1L ]
+                }
+        }
+     |> Result.isError)
+
 printfn "%d checks passed" count

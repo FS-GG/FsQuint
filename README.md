@@ -4,7 +4,8 @@ Quint trace validation and implementation correspondence for F# on .NET 10.
 A trace match establishes agreement for the selected trace and explicit projection;
 it is not an unbounded proof of correctness.
 
-Implementation is in progress. Packages are not yet publicly published.
+Preview packages are available on [nuget.org](https://www.nuget.org/packages/FsQuint).
+Stable qualification and consumer migration are in progress.
 
 - **FsQuint**: bounded raw ITF decoding, exact values, stable replay fingerprints,
   validation, comparison and a cooperative async driver lifecycle.
