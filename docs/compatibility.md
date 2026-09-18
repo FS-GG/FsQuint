@@ -2,7 +2,7 @@
 
 | Axis | Initial contract |
 |---|---|
-| Package API | 0.1.0 release candidate; publication follows consumer qualification |
+| Package API | 0.1.0; stable API within the 0.1 line |
 | Target | net10.0; SDK 10.0.401; runtime 10.0.12 |
 | FSharp.Core floor | 10.1.302, tested with the current SDK |
 | Replay envelope / canonicalization | schema 1; existing SDD valid-value identities preserved |

@@ -5,11 +5,13 @@ FsQuint.Tooling publish together from an immutable tag. Release readback compare
 payloads from both feeds, excluding NuGet's repository signature, and checks source
 commit identity. An anonymous external directory restores and runs the queue example.
 
-## 0.1.0 candidate
+## 0.1.0
 
-The stable candidate includes the preview 2 Unicode fix and the same public API,
-canonical schema and Quint 0.32.0 tool matrix. Promotion requires completion of both
-consumer migrations, actual package update PRs and rejected-update rollback evidence.
+The stable release includes the preview 2 Unicode fix and the same public API,
+canonical schema and Quint 0.32.0 tool matrix. Release qualification requires both consumer migrations, actual package update PRs
+and rejected-update rollback evidence. CI and publication explicitly provision the
+checksum-pinned Rust evaluator 0.6.0 as well as Quint 0.32.0; no implicit evaluator
+download is needed during qualification.
 See the [canonical roadmap](roadmaps/fsquint.md) for live completion status.
 
 ## 0.1.0-preview.2

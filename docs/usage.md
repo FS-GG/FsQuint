@@ -49,8 +49,9 @@ to each invocation; the request deadline includes hashing and version selection.
 Owned process trees are terminated on cancellation/overflow on the qualified platform.
 This is not a sandbox against malicious executables or detached processes.
 
-No network access or tool installation occurs in either package. Offline users may
-restore packages from a prepopulated NuGet cache and provision the pinned tool themselves.
+Neither package downloads or installs tools itself. The external Quint process may
+attempt downloads if its evaluator is missing; offline users must provision both tools
+as described below and restore packages from a prepopulated NuGet cache.
 FsQuint version updates never select a new Quint version automatically.
 
 ## Reproducing the Linux tooling checks
