@@ -2,6 +2,8 @@
 import base64
 import hashlib
 import json
+import re
+import xml.etree.ElementTree as ET
 import os
 from pathlib import Path
 import sys
@@ -21,6 +23,9 @@ class SafeRedirect(urllib.request.HTTPRedirectHandler):
 reader = urllib.request.build_opener(SafeRedirect())
 
 version = sys.argv[1]
+if not re.fullmatch(r"[0-9]+\.[0-9]+\.[0-9]+(?:-[A-Za-z0-9.-]+)?", version):
+    raise ValueError("Invalid package version")
+expected_commit = sys.argv[2] if len(sys.argv) > 2 else os.environ.get('GITHUB_SHA')
 root = Path('artifacts/readback')
 root.mkdir(parents=True, exist_ok=True)
 
@@ -57,6 +62,12 @@ for package in ['FsQuint', 'FsQuint.Tooling']:
         target = root / f'{name}.{feed}.nupkg'
         target.write_bytes(content)
         actual = payloads(target)
+        with zipfile.ZipFile(target) as archive:
+            spec = next(name for name in archive.namelist() if name.endswith('.nuspec'))
+            metadata = ET.fromstring(archive.read(spec))
+            repository = next(node for node in metadata.iter() if node.tag.endswith('}repository') or node.tag == 'repository')
+            if expected_commit and repository.attrib.get('commit') != expected_commit:
+                raise ValueError(f'{package}: source commit differs from release tag')
         if expected is None:
             expected = actual
         if expected != actual:
