@@ -10,18 +10,25 @@ supports replay against an implementation through a caller-supplied driver. The
 caller maps implementation state to model state for comparison. A match establishes
 agreement for that trace and mapping; it is not an unbounded proof of correctness.
 
-## Catch CI mistakes before long test runs
+## Harden CI workflows before relying on them
 
-A quick Quint check can catch a mistake in a CI plan before expensive tests start.
-Model the job dependencies and required outcomes, check possible execution orders,
-and make that preflight a prerequisite for the long run. A failing check provides
-a counterexample that explains the scheduling mistake.
+Quint can check a CI design when the workflow is created or materially changed.
+Model the relevant job state and required outcomes, explore possible execution
+orders, then harden the real workflow when Quint finds a counterexample. Keep the
+model tied to the workflow so later changes cannot silently invalidate the result.
 
-The [CI preflight example](examples/CiPreflight) demonstrates a report job missing
-one test-shard dependency. Quint finds an order where the report runs too early;
-an F# gate using FsQuint.Tooling returns failure, so the expensive command never
-starts. The corrected plan passes the same check. This targets mistakes represented
-in the model; a passing sampled check does not replace the actual test suite.
+A fixed model normally does not need to run before every source-code build: its
+answer cannot change when the workflow, model, check configuration and toolchain stay
+the same. Run the check when one of those inputs changes. A per-run preflight is useful
+when each run supplies a different execution plan, shard selection, retry policy or
+other modeled input.
+
+The [CI workflow example](examples/CiPreflight) demonstrates a report job missing
+one test-shard dependency. Quint finds an order where the report runs too early,
+and the corrected design passes the same property. Its command-gating demonstration
+shows how a changing plan could block dependent work. For a fixed workflow, use it
+as a change-time robustness check. It targets mistakes represented in the model;
+a passing sampled check does not replace the actual test suite.
 
 Related Quint tools:
 
