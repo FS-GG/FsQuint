@@ -1,6 +1,6 @@
 # Independent bounded queue
 
-Install .NET SDK 10.0.401. Once the pinned package is published, copy this directory,
+Install .NET SDK 10.0.401. Copy this directory,
 `../../global.json` and `../../NuGet.Config` into an otherwise empty directory, then:
 
 ```sh

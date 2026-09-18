@@ -6,7 +6,7 @@ Date: **2026-09-18**
 
 Status: **implementation active; FQ0–FQ6 complete; update and stable-release qualification active**
 
-Repository: **FS-GG/FsQuint**, public. Both preview packages published; stable promotion pending.
+Repository: **FS-GG/FsQuint**, public. Core and Tooling 0.1.0 are published; final consumer qualification is in progress.
 
 Planning owner: FS-GG; implementation/package owner: FsQuint maintainers.
 
@@ -332,8 +332,8 @@ in `tests/legacy-vectors.json`; generated from the attributed source revision, w
 no source copy in the test suite. Genuine queue traces include agreement, deliberate
 FIFO and projection divergence; raw map/tuple/set/bigint/variant fixtures come from
 Quint 0.32.0. Process tests cover real named tests, zero tests, samples/counterexample,
-identity mismatch, output flood, deadline and owned-child termination. Full local
-check command is `QUINT_BIN=/absolute/quint bash eng/check.sh`.
+identity mismatch, output flood, deadline and owned-child termination. The [tooling setup](../usage.md#reproducing-the-linux-tooling-checks) provisions both
+Quint and its Rust evaluator before the full local check.
 
 The tooling scope is explicitly narrowed to typecheck/test/run in [decisions](../decisions.md).
 No verifier outcome is exposed. Existing consumer formal gates remain unchanged.
@@ -373,7 +373,7 @@ Host 78, PostgreSQL 34, architecture 657 and complete canonical qualification: Q
 eight positive invariants, 166 negative controls, 64 hosted progress states and 1,162
 hosted fault-safety states. Compiler/protocol identities and budgets are unchanged.
 The initial migration merged after all required CI gates passed. The subsequent
-[preview 2 update PR431](https://github.com/FS-GG/FS.GG.Coordination/pull/431) awaits its merge gates and passes journal 3, Host 78 and PostgreSQL 34 locally; a preview 1 downgrade is
+[preview 2 update PR431](https://github.com/FS-GG/FS.GG.Coordination/pull/431) merged after its gates passed and passes journal 3, Host 78 and PostgreSQL 34 locally; a preview 1 downgrade is
 rejected, and rollback to preview 2 passes the three journal controls.
 
 The queue example and Coordination currently reference only core. Tooling is optional
