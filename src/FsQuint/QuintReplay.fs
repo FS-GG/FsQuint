@@ -14,6 +14,23 @@ module private ReplayInternal =
             Message = message
         }
 
+    // Replacement fallback is unsuitable for identities: malformed UTF-16 must
+    // never collapse to the same UTF-8 bytes as a legitimate replacement character.
+    let validUnicode (value: string) =
+        try
+            UTF8Encoding(false, true).GetByteCount(value) |> ignore
+            true
+        with :? EncoderFallbackException ->
+            false
+
+    let unicodeDiagnostics path value =
+        if isNull value || validUnicode value then
+            []
+        else
+            [
+                diagnostic "QRP-STRING-UNICODE" path "Strings must contain valid Unicode scalar values."
+            ]
+
     let sortDiagnostics diagnostics =
         diagnostics
         |> List.distinct
@@ -78,6 +95,7 @@ module private ReplayInternal =
                     ]
         | Text value when Object.ReferenceEquals(value, null) ->
             Error [ diagnostic "QRP-VALUE-TEXT" path "Text values cannot be null." ]
+        | Text value when not (validUnicode value) -> Error(unicodeDiagnostics path value)
         | Text value -> Ok(escapeJson value)
         | Sequence values ->
             values
@@ -121,7 +139,7 @@ module private ReplayInternal =
                             diagnostic "QRP-VALUE-RECORD-KEY" $"%s{path}[%d{index}]" "Record keys cannot be blank."
                         ]
                     else
-                        [])
+                        unicodeDiagnostics $"%s{path}[%d{index}]" name)
                 |> List.concat
 
             if not duplicates.IsEmpty || not keyDiagnostics.IsEmpty then
@@ -163,6 +181,7 @@ module private ReplayInternal =
         [
             if String.IsNullOrWhiteSpace source.Path then
                 diagnostic "QRP-SOURCE-PATH" $"%s{path}.path" "Source path is required."
+            yield! unicodeDiagnostics ($"%s{path}.path") source.Path
             if source.Line < 1 then
                 diagnostic "QRP-SOURCE-LINE" $"%s{path}.line" "Source line must be positive."
             if source.Column < 1 then
@@ -180,6 +199,8 @@ module private ReplayInternal =
                             "QRP-STATE-BINDING"
                             $"%s{path}.bindings[%d{index}]"
                             "State binding names cannot be blank."
+
+                    yield! unicodeDiagnostics ($"%s{path}.bindings[%d{index}]") name
 
                 for name, count in bindingNames |> List.countBy id |> List.sortBy fst do
                     if count > 1 then
@@ -404,6 +425,8 @@ module QuintReplay =
                             $"$.environment.bounds[%d{index}]"
                             "Bound names cannot be blank."
 
+                    yield! ReplayInternal.unicodeDiagnostics ($"$.environment.bounds[%d{index}]") name
+
                     if value < 0L then
                         ReplayInternal.diagnostic
                             "QRP-BOUND-VALUE"
@@ -432,6 +455,7 @@ module QuintReplay =
                     if String.IsNullOrWhiteSpace step.Action then
                         ReplayInternal.diagnostic "QRP-STEP-ACTION" $"$.steps[%d{ordinal}].action" "Action is required."
 
+                    yield! ReplayInternal.unicodeDiagnostics ($"$.steps[%d{ordinal}].action") step.Action
                     yield! ReplayInternal.validateSource $"$.steps[%d{ordinal}].source" step.Source
                     yield! ReplayInternal.validateState $"$.steps[%d{ordinal}].expected" step.Expected
             ]
@@ -451,6 +475,7 @@ module QuintReplay =
                 if String.IsNullOrWhiteSpace environment.Seed then
                     ReplayInternal.diagnostic "QRP-SEED" "$.environment.seed" "Replay seed is required."
 
+                yield! ReplayInternal.unicodeDiagnostics "$.environment.seed" environment.Seed
                 yield! ReplayInternal.validateFingerprint "$.environment.toolFingerprint" environment.ToolFingerprint
                 yield!
                     ReplayInternal.validateFingerprint "$.environment.profileFingerprint" environment.ProfileFingerprint
@@ -711,6 +736,7 @@ module QuintReplay =
                             $"$.observations[%d{ordinal}].action"
                             "Observed action is required."
 
+                    yield! ReplayInternal.unicodeDiagnostics ($"$.observations[%d{ordinal}].action") observation.Action
                     yield! ReplayInternal.validateSource $"$.observations[%d{ordinal}].source" observation.Source
                     yield! ReplayInternal.validateState $"$.observations[%d{ordinal}].actual" observation.Actual
             ]
