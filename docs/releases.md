@@ -12,7 +12,11 @@ canonical schema and Quint 0.32.0 tool matrix. Release qualification requires bo
 and rejected-update rollback evidence. CI and publication explicitly provision the
 checksum-pinned Rust evaluator 0.6.0 as well as Quint 0.32.0; no implicit evaluator
 download is needed during qualification.
-See the [canonical roadmap](roadmaps/fsquint.md) for live completion status.
+[Stable release verification](https://github.com/FS-GG/FsQuint/actions/runs/35330871321)
+passed for both feeds and anonymous external consumption. SDD and Coordination
+merged stable adoption; SDD Artifacts/CLI 2.0.2 are publicly qualified, including
+previous-client binary compatibility and 58 installed-package checks.
+The [canonical roadmap](roadmaps/fsquint.md) records completed FQ0–FQ7 evidence.
 
 ## 0.1.0-preview.2
 

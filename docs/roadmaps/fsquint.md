@@ -4,9 +4,9 @@ Feature identity: **FSQUINT-01**
 
 Date: **2026-09-18**
 
-Status: **implementation active; FQ0–FQ6 complete; update and stable-release qualification active**
+Status: **complete; FQ0–FQ7 qualified and stable packages publicly available**
 
-Repository: **FS-GG/FsQuint**, public. Both preview packages published; stable promotion pending.
+Repository: **FS-GG/FsQuint**, public. Core and Tooling 0.1.0 are published and both production consumers have adopted them.
 
 Planning owner: FS-GG; implementation/package owner: FsQuint maintainers.
 
@@ -281,7 +281,7 @@ authority. Reuse existing evidence instead of restarting the completed Choreo pr
 - [x] FQ4 immutable public prerelease installed anonymously.
 - [x] FQ5 SDD delegates without duplicate generic algorithms.
 - [x] FQ6 Coordination consumes packages with existing evidence preserved.
-- [ ] FQ7 actual downstream update, rollback and stable public consumption qualified.
+- [x] FQ7 actual downstream update, rollback and stable public consumption qualified.
 
 FQ2 and FQ3 can develop in parallel once shared interfaces stabilize; FQ5 and domain migration preparation
 can overlap without publishing consumers against unavailable packages. Stable release follows both consumers.
@@ -332,8 +332,8 @@ in `tests/legacy-vectors.json`; generated from the attributed source revision, w
 no source copy in the test suite. Genuine queue traces include agreement, deliberate
 FIFO and projection divergence; raw map/tuple/set/bigint/variant fixtures come from
 Quint 0.32.0. Process tests cover real named tests, zero tests, samples/counterexample,
-identity mismatch, output flood, deadline and owned-child termination. Full local
-check command is `QUINT_BIN=/absolute/quint bash eng/check.sh`.
+identity mismatch, output flood, deadline and owned-child termination. The [tooling setup](../usage.md#reproducing-the-linux-tooling-checks) provisions both
+Quint and its Rust evaluator before the full local check.
 
 The tooling scope is explicitly narrowed to typecheck/test/run in [decisions](../decisions.md).
 No verifier outcome is exposed. Existing consumer formal gates remain unchanged.
@@ -357,7 +357,7 @@ FQ7 upstream defect reproduced against served preview 1: an unpaired UTF-16 surr
 was accepted and fingerprinted identically to U+FFFD through UTF-8 replacement fallback.
 The regression fails on preview 1; the fix rejects malformed strings across text, record
 keys, state bindings and trace provenance. Valid Unicode/canonical identities are unchanged.
-Preview 2 carries the fix; downstream update and stable qualification remain outstanding.
+Preview 2 carries the fix. Stable 0.1.0 and final downstream stable adoption are publicly qualified.
 
 Consumer qualification: SDD [PR996](https://github.com/FS-GG/FS.GG.SDD/pull/996)
 merged with unchanged public signatures and compiled-client compatibility. Its public
@@ -373,7 +373,7 @@ Host 78, PostgreSQL 34, architecture 657 and complete canonical qualification: Q
 eight positive invariants, 166 negative controls, 64 hosted progress states and 1,162
 hosted fault-safety states. Compiler/protocol identities and budgets are unchanged.
 The initial migration merged after all required CI gates passed. The subsequent
-[preview 2 update PR431](https://github.com/FS-GG/FS.GG.Coordination/pull/431) awaits its merge gates and passes journal 3, Host 78 and PostgreSQL 34 locally; a preview 1 downgrade is
+[preview 2 update PR431](https://github.com/FS-GG/FS.GG.Coordination/pull/431) merged after its gates passed and passes journal 3, Host 78 and PostgreSQL 34 locally; a preview 1 downgrade is
 rejected, and rollback to preview 2 passes the three journal controls.
 
 The queue example and Coordination currently reference only core. Tooling is optional
@@ -388,3 +388,42 @@ include five new policy-weakening mutations and the existing alternate-route con
 SDD already has the organization preset; its stable adoption explicitly routes FsQuint
 to public NuGet and disables automatic merging. A real extraction scan exposed its
 obsolete private-feed secret interpolation, which is removed with that adoption.
+
+Stable publication: [PR9](https://github.com/FS-GG/FsQuint/pull/9) merged at
+`34eeca981c136144ced73a3f98b5ce04218e89c7`; immutable tag `v0.1.0` publishes both
+packages and symbols. [Release verification](https://github.com/FS-GG/FsQuint/actions/runs/35330871321)
+passed both-feed payload/source readback and the anonymous independent queue example.
+CI explicitly provisions checksum-pinned Quint 0.32.0 and Rust evaluator 0.6.0,
+avoiding an implicit evaluator download that exposed a GitHub API 403 during qualification.
+All 73 core/tooling checks pass with the explicitly provisioned toolchain.
+
+Final adoption merged through SDD [PR998](https://github.com/FS-GG/FS.GG.SDD/pull/998),
+Coordination [PR432](https://github.com/FS-GG/FS.GG.Coordination/pull/432), and the
+[stable registry update](https://github.com/FS-GG/.github/pull/3540). Local SDD
+635 artifact and 1,355 command tests pass against served stable bytes; Coordination
+Host 78, PostgreSQL 34, journal 3 and all 658 architecture checks also pass.
+[Coordination qualification](https://github.com/FS-GG/FS.GG.Coordination/actions/runs/35332190352)
+passed all required gates, including the complete canonical formal shards and evidence
+manifest. The stable adoption merged at `98a5baf50ba4a401fec66a459e224a27ef2476f2`.
+SDD Artifacts and CLI 2.0.2 were promoted from the exact accepted candidate at
+`83790aedc228e2158c9da7a9ac8e30195bdf9fbe`. The initial publish passed both feeds
+and payload readback but hit a NuGet version-index delay during clean installation.
+[Read-only recovery](https://github.com/FS-GG/FS.GG.SDD/actions/runs/35336067623)
+passed without republishing. Literal ZIP-entry comparison against the retained
+candidate confirms every non-signature entry: 12 Artifacts and 45 CLI entries.
+An unchanged client compiled against public SDD 2.0.1 runs against public 2.0.2;
+network-isolated installed-package acceptance passes 58 checks across Q2, exact-IR
+and Q3, including .NET/Fable parity and rollback. FQ7 is complete.
+
+Generic replay and decoding now have one upstream owner. SDD retains a CLR-compatible
+mapping facade; Coordination retains domain models, projections and qualification.
+Reviewed Renovate updates propagate public package versions, while independent Quint
+tool pins and consumer evidence gates prevent an unqualified automatic rollout.
+
+The independent [CI preflight example](../../examples/CiPreflight), added in
+[PR12](https://github.com/FS-GG/FsQuint/pull/12), consumes public FsQuint.Tooling
+0.1.0. It checks a four-job scheduling model before allowing a workload command.
+The missing-dependency counterexample and an unavailable tool both prevent launch;
+the corrected plan and a named completion scenario permit it. This is sampled
+model evidence, not a prediction that application tests will pass. Both PR CI runs
+and an external-directory public-package check pass.
