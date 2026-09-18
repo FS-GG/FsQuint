@@ -4,7 +4,7 @@ Feature identity: **FSQUINT-01**
 
 Date: **2026-09-18**
 
-Status: **implementation active; FQ0 decided, FQ1–FQ3 in qualification; no published packages yet**
+Status: **implementation active; FQ0–FQ3 qualified locally; prerelease publication next**
 
 Repository: **FS-GG/FsQuint**, public. Package names checked; publication pending.
 
@@ -175,7 +175,7 @@ separate claims. A caller may generate traces elsewhere and replay them without 
 
 Maintain independent version axes: NuGet API, replay schema/canonicalization, supported raw ITF dialect,
 Quint CLI/backend, and consumer adapter/projection. Publish a tested compatibility matrix including .NET TFMs,
-FSharp.Core floor, OS/architecture and verifier requirements where relevant. The user explicitly selected current .NET 10: net10.0, SDK 10.0.401, FSharp.Core 10.1.401.
+FSharp.Core floor, OS/architecture and verifier requirements where relevant. The user explicitly selected current .NET 10: net10.0, SDK 10.0.401, FSharp.Core 10.1.302.
 This is an explicit product requirement, independently exercised by the clean queue consumer.
 Fable support is deferred until the JSON, cryptography and async dependencies have their own qualification.
 
@@ -277,9 +277,9 @@ authority. Reuse existing evidence instead of restarting the completed Choreo pr
 | **FQ7 — Qualify updates and stable release** | FsQuint and both consumer owners; FQ5–FQ6 | Exercise one substantive generic bug fix through a package update and both consumer PRs, plus a rejected incompatible/evidence-changing update. Verify package/tool pin separation, cache invalidation and rollback. Publish a stable version under release authority, rerun public independent and production consumer evidence against its served bytes, and establish maintenance/support ownership |
 
 - [x] FQ0 extraction, rights and compatibility decisions accepted; see [decisions](../decisions.md).
-- [ ] FQ1 generic core and decoder/value contract qualified.
-- [ ] FQ2 independent example and production-driver interface qualified.
-- [ ] FQ3 optional tooling matrix and failure behavior qualified.
+- [x] FQ1 generic core and decoder/value contract qualified.
+- [x] FQ2 independent example and production-driver interface qualified.
+- [x] FQ3 optional tooling matrix and failure behavior qualified.
 - [ ] FQ4 immutable public prerelease installed anonymously.
 - [ ] FQ5 SDD delegates without duplicate generic algorithms.
 - [ ] FQ6 Coordination consumes packages with existing evidence preserved.
@@ -325,3 +325,25 @@ On continuation, inspect the first incomplete milestone and current upstream/con
 prerequisites, and execute the next useful bounded slice. Update this roadmap with actual merge/release and
 consumer evidence. After repository creation, FsQuint owns the detailed implementation plan; keep one
 canonical roadmap or a clear successor link here rather than maintaining divergent progress ledgers.
+
+## Implementation evidence — 2026-09-18
+
+FQ0–FQ3: net10.0, SDK 10.0.401; 65 core/tooling checks and an external-directory
+package consumer pass. Original SDD canonical byte/fingerprint vectors are retained
+in `tests/legacy-vectors.json`; generated from the attributed source revision, with
+no source copy in the test suite. Genuine queue traces include agreement, deliberate
+FIFO and projection divergence; raw map/tuple/set/bigint/variant fixtures come from
+Quint 0.32.0. Process tests cover real named tests, zero tests, samples/counterexample,
+identity mismatch, output flood, deadline and owned-child termination. Full local
+check command is `QUINT_BIN=/absolute/quint bash eng/check.sh`.
+
+The tooling scope is explicitly narrowed to typecheck/test/run in [decisions](../decisions.md).
+No verifier outcome is exposed. Existing consumer formal gates remain unchanged.
+
+NuGet trust was initially missing; the owner configured FS-Quint-Publishing, and
+[identity check 35319107544](https://github.com/FS-GG/FsQuint/actions/runs/35319107544)
+succeeded. This is authentication evidence only, not a publication receipt.
+
+Migration spikes: SDD's existing seven replay tests pass through the facade; Coordination's
+78 Host tests pass after removing the linked engine and using the package driver API.
+These are local candidate checks, not completion of FQ5/FQ6 public consumption.

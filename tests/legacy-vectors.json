@@ -1,0 +1,37 @@
+[
+  {
+    "canonical": "null",
+    "fingerprint": "1c197daef20de3f47eec5e2f735ec6669869d3180cc29f35be4788511e0af0f8",
+    "name": "0"
+  },
+  {
+    "canonical": "true",
+    "fingerprint": "8c5aaab6e1efdec7f7f9f65cc0de77461c36a46e6b7c9ee7a35299dd6e8449ee",
+    "name": "1"
+  },
+  {
+    "canonical": "123",
+    "fingerprint": "8bc37e864423c1bf69e25ef09896e62eb74295c1dd3398ca30902c857d5de74b",
+    "name": "2"
+  },
+  {
+    "canonical": "\u0022\u03BB\uD83D\uDE00\\n\\r\\t\u0022",
+    "fingerprint": "f6f1186dc8e6ff1844bad314f2cfc015a3870d79dd915fbcbc75cf97242f02a9",
+    "name": "3"
+  },
+  {
+    "canonical": "[2,1]",
+    "fingerprint": "ddfac26b0949f72dd17a53a7e3f856a87b6345c41933e158e943304aff0f7deb",
+    "name": "4"
+  },
+  {
+    "canonical": "{\u0022#set\u0022:[1,2]}",
+    "fingerprint": "98c16acf4fc8e7e1a08fb2c7806607d88d2203c4510c982dcf1c11a19d50a863",
+    "name": "5"
+  },
+  {
+    "canonical": "{\u0022a\u0022:{\u0022#set\u0022:[false,null]},\u0022z\u0022:\u0022last\u0022}",
+    "fingerprint": "8da69f7ef19aa1fad9f6653c47ab8bea454faffb4bbc84866c53f16fa8669e09",
+    "name": "6"
+  }
+]

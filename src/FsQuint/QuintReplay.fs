@@ -326,8 +326,17 @@ module private ReplayInternal =
                 |> Seq.toList
                 |> collectDecoded
                 |> Result.map Set
-            | None, None when element.EnumerateObject() |> Seq.exists (fun f -> f.Name.StartsWith("#", StringComparison.Ordinal)) ->
-                Error [ diagnostic "QRP-ITF-UNSUPPORTED" path "Tagged value is outside the schema-v1 replay subset; use Itf.read and an explicit projection." ]
+            | None, None when
+                element.EnumerateObject()
+                |> Seq.exists (fun f -> f.Name.StartsWith("#", StringComparison.Ordinal))
+                ->
+                Error
+                    [
+                        diagnostic
+                            "QRP-ITF-UNSUPPORTED"
+                            path
+                            "Tagged value is outside the schema-v1 replay subset; use Itf.read and an explicit projection."
+                    ]
             | None, None ->
                 element.EnumerateObject()
                 |> Seq.map (fun item ->
@@ -669,14 +678,20 @@ module QuintReplay =
 
     let decodeItf context (text: string) =
         if isNull text || text.Length > Itf.defaultLimits.MaxBytes then
-            Error [ ReplayInternal.diagnostic "QRP-ITF-LIMIT" "$" "Input is null or exceeds the input limit." ]
+            Error
+                [
+                    ReplayInternal.diagnostic "QRP-ITF-LIMIT" "$" "Input is null or exceeds the input limit."
+                ]
         else
             try
                 match Itf.read Itf.defaultLimits (UTF8Encoding(false, true).GetBytes(text)) with
                 | Error errors -> Error errors
                 | Ok _ -> decodeItfUnchecked context text
             with :? EncoderFallbackException ->
-                Error [ ReplayInternal.diagnostic "QRP-ITF-UTF8" "$" "Input contains an invalid Unicode scalar." ]
+                Error
+                    [
+                        ReplayInternal.diagnostic "QRP-ITF-UTF8" "$" "Input contains an invalid Unicode scalar."
+                    ]
 
     let compare trace observations =
         let traceDiagnostics = validateTrace trace
