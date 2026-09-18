@@ -51,14 +51,12 @@ jobs:
           user: ${{ secrets.NUGET_USER || 'Paradigma11' }}
       - name: Provision pinned Quint
         if: github.event_name == 'push'
-        run: |
-          curl -fsSL https://github.com/quint-co/quint/releases/download/v0.32.0/quint-linux-amd64 -o "$RUNNER_TEMP/quint"
-          echo "939b64095b706017f2f202c6f99c860c40be7c31bddc2b98557316e50f42cd7f  $RUNNER_TEMP/quint" | sha256sum --check
-          chmod +x "$RUNNER_TEMP/quint"
+        run: bash eng/provision-quint.sh "$RUNNER_TEMP/quint-tools"
       - name: Qualify and pack
         if: github.event_name == 'push'
         env:
-          QUINT_BIN: ${{ runner.temp }}/quint
+          QUINT_BIN: ${{ runner.temp }}/quint-tools/quint
+          QUINT_HOME: ${{ runner.temp }}/quint-tools/home
         run: |
           set -euo pipefail
           version=$(dotnet msbuild src/FsQuint/FsQuint.fsproj -getProperty:Version)
