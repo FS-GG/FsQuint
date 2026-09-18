@@ -1,28 +1,38 @@
 # FsQuint
 
-Quint trace validation and implementation correspondence for F# on .NET 10.
-A trace match establishes agreement for the selected trace and explicit projection;
-it is not an unbounded proof of correctness.
+FsQuint reads Quint traces and checks F# implementations against them on .NET 10.
+The packages work in any F# project targeting .NET 10; no FS-GG setup is required.
 
-Packages are available on [nuget.org](https://www.nuget.org/packages/FsQuint).
-Use them from any F# project targeting .NET 10; no FS-GG project setup is required.
+[Quint](https://quint.sh/) is an open-source specification language for modeling
+systems as states and transitions, then checking their properties. A trace records
+one sequence of states. FsQuint reads traces in the Informal Trace Format (ITF) and
+supports replay against an implementation through a caller-supplied driver. The
+caller maps implementation state to model state for comparison. A match establishes
+agreement for that trace and mapping; it is not an unbounded proof of correctness.
 
-- **FsQuint**: bounded raw ITF decoding, exact values, stable replay fingerprints,
-  validation, comparison and a cooperative async driver lifecycle.
-- **FsQuint.Tooling**: optional, explicitly pinned Quint process execution on Linux x64.
-  Tools are provisioned by the caller; no download or installation occurs in the library.
+Related Quint tools:
 
-The [bounded queue example](examples/BoundedQueue) includes a genuine Quint-generated
-trace and an independently implemented F# queue. Its positive control and three negative
-controls run without FS-GG services, repository conventions or credentials.
+- [Quint CLI](https://quint.sh/docs/quint): generate ITF traces, including with its Rust evaluator.
+- [Quint Connect](https://github.com/quint-co/quint-connect): model-based testing
+  that replays Quint traces against Rust implementations.
+- [Quint Trace Explorer](https://github.com/quint-co/quint-trace-explorer): a terminal
+  interface for inspecting ITF traces and state changes.
 
-Install the core package in your project:
+## Install
+
+- [FsQuint](https://www.nuget.org/packages/FsQuint): trace decoding with explicit
+  resource limits, exact values, stable fingerprints, validation and asynchronous replay.
+- [FsQuint.Tooling](https://www.nuget.org/packages/FsQuint.Tooling): optional execution
+  of explicitly pinned Quint tools on Linux x64. The caller provisions the tools;
+  the library does not download or install them.
 
 ```sh
 dotnet add package FsQuint --version 0.1.0
 # Optional process wrapper:
 dotnet add package FsQuint.Tooling --version 0.1.0
 ```
+
+## Read and replay traces
 
 Read a trace produced by Quint:
 
@@ -35,18 +45,25 @@ match Itf.read Itf.defaultLimits (File.ReadAllBytes "trace.itf.json") with
 | Error diagnostics -> failwithf "Invalid trace: %A" diagnostics
 ```
 
-For implementation replay, the [queue example](examples/BoundedQueue) shows state
-fingerprints, a driver, exact comparison and deliberate divergence controls. The
-[usage guide](docs/usage.md) explains attribution, cancellation and tool outcomes.
+The [bounded queue example](examples/BoundedQueue) replays a Quint-generated trace
+against an independently implemented F# queue. It demonstrates matching behavior,
+an implementation bug, a state-mapping error and rejection of a malformed trace.
+It runs without Quint installed or FS-GG services and credentials. The
+[usage guide](docs/usage.md) covers replay drivers, cancellation and tool outcomes.
 
-Build this repository with SDK **10.0.401**, pinned in `global.json`:
+## Run repository checks
+
+Use SDK **10.0.401**, pinned in [global.json](global.json):
 
 ```sh
 dotnet run --project tests/FsQuint.Tests
-# Include actual Quint tooling checks with the qualified binary:
-QUINT_BIN=/absolute/path/to/quint dotnet run --project tests/FsQuint.Tests
 ```
 
-See the [roadmap](docs/roadmaps/fsquint.md), [extraction decisions](docs/decisions.md)
-and [source notices](NOTICE.md). The [compatibility policy](docs/compatibility.md)
-defines the supported API, trace dialect and tooling platform.
+To include Quint process checks, follow the
+[Linux tooling setup](docs/usage.md#reproducing-the-linux-tooling-checks), which
+provisions both Quint and its Rust evaluator with verified checksums.
+
+See the [compatibility policy](docs/compatibility.md) for supported APIs, trace dialect
+and tooling platform; the [roadmap](docs/roadmaps/fsquint.md) and
+[extraction decisions](docs/decisions.md) for design context; and
+[source notices](NOTICE.md) for attribution.
