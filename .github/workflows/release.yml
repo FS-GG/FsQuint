@@ -1,0 +1,63 @@
+name: release
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      identity_check_only:
+        description: Check NuGet trusted publishing configuration without publishing
+        type: boolean
+        default: true
+permissions:
+  contents: read
+concurrency:
+  group: fsquint-release
+  cancel-in-progress: false
+jobs:
+  publish:
+    if: github.repository == 'FS-GG/FsQuint'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v6
+        with:
+          global-json-file: global.json
+      - name: NuGet trusted publishing identity
+        id: nuget
+        uses: NuGet/login@v1
+        with:
+          user: ${{ secrets.NUGET_USER || 'Paradigma11' }}
+      - name: Provision pinned Quint
+        if: github.event_name == 'push'
+        run: |
+          curl -fsSL https://github.com/quint-co/quint/releases/download/v0.32.0/quint-linux-amd64 -o "$RUNNER_TEMP/quint"
+          echo "939b64095b706017f2f202c6f99c860c40be7c31bddc2b98557316e50f42cd7f  $RUNNER_TEMP/quint" | sha256sum --check
+          chmod +x "$RUNNER_TEMP/quint"
+      - name: Qualify and pack
+        if: github.event_name == 'push'
+        env:
+          QUINT_BIN: ${{ runner.temp }}/quint
+        run: |
+          set -euo pipefail
+          version=$(dotnet msbuild src/FsQuint/FsQuint.fsproj -getProperty:Version)
+          test "${GITHUB_REF_NAME}" = "v$version"
+          bash eng/check.sh
+      - name: Publish identical archives to both feeds
+        if: github.event_name == 'push'
+        env:
+          GH_PACKAGE_KEY: ${{ secrets.GITHUB_TOKEN }}
+          PUBLIC_PACKAGE_KEY: ${{ steps.nuget.outputs.NUGET_API_KEY }}
+        run: |
+          set -euo pipefail
+          dotnet nuget push 'artifacts/packages/*.nupkg' --source https://nuget.pkg.github.com/FS-GG/index.json --api-key "$GH_PACKAGE_KEY" --skip-duplicate
+          dotnet nuget push 'artifacts/packages/*.nupkg' --source https://api.nuget.org/v3/index.json --api-key "$PUBLIC_PACKAGE_KEY" --skip-duplicate
+      - uses: actions/upload-artifact@v4
+        if: github.event_name == 'push'
+        with:
+          name: packages-${{ github.sha }}
+          path: artifacts/packages/*
+          if-no-files-found: error

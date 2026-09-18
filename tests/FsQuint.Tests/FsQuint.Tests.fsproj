@@ -1,0 +1,1 @@
+<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><IsPackable>false</IsPackable></PropertyGroup><ItemGroup><ProjectReference Include="../../src/FsQuint/FsQuint.fsproj"/><ProjectReference Include="../../src/FsQuint.Tooling/FsQuint.Tooling.fsproj"/><Compile Include="Program.fs"/></ItemGroup></Project>

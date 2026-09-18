@@ -1,0 +1,23 @@
+name: ci
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  qualify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v6
+        with:
+          global-json-file: global.json
+      - name: Provision pinned Quint
+        run: |
+          curl -fsSL https://github.com/quint-co/quint/releases/download/v0.32.0/quint-linux-amd64 -o "$RUNNER_TEMP/quint"
+          echo "939b64095b706017f2f202c6f99c860c40be7c31bddc2b98557316e50f42cd7f  $RUNNER_TEMP/quint" | sha256sum --check
+          chmod +x "$RUNNER_TEMP/quint"
+      - name: Qualify core, tooling and external package consumer
+        env:
+          QUINT_BIN: ${{ runner.temp }}/quint
+        run: bash eng/check.sh
