@@ -1,5 +1,5 @@
 <Project><PropertyGroup>
-<TargetFramework>net10.0</TargetFramework><Version>0.1.0-preview.2</Version>
+<TargetFramework>net10.0</TargetFramework><Version>0.1.0</Version>
 <Deterministic>true</Deterministic><GenerateDocumentationFile>true</GenerateDocumentationFile><RestorePackagesWithLockFile>true</RestorePackagesWithLockFile><IncludeSymbols>true</IncludeSymbols><SymbolPackageFormat>snupkg</SymbolPackageFormat><EmbedUntrackedSources>true</EmbedUntrackedSources><PublishRepositoryUrl>true</PublishRepositoryUrl>
 <Authors>FS-GG</Authors><RepositoryUrl>https://github.com/FS-GG/FsQuint</RepositoryUrl><RepositoryType>git</RepositoryType>
 <PackageLicenseExpression>MIT</PackageLicenseExpression><PackageReadmeFile>README.md</PackageReadmeFile>
