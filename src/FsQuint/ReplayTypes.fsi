@@ -100,4 +100,3 @@ type QuintReplayDivergence =
 type QuintReplayResult =
     | Equivalent
     | Diverged of QuintReplayDivergence
-

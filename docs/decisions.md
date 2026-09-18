@@ -8,7 +8,9 @@ migration window is this extraction programme, ending before the first stable re
 SDD and Coordination keep domain models, policy, qualification and adoption ownership.
 
 The user explicitly selected the latest .NET 10. All projects target net10.0, with SDK
-10.0.401 (runtime 10.0.12) and FSharp.Core 10.1.401. The SDK archive was checked against
+10.0.401 (runtime 10.0.12) and FSharp.Core 10.1.302. FSharp.Core retains the consumers’ 10.1.302 minimum to avoid an unrelated organization-wide
+package baseline upgrade; the SDK/compiler and runtime remain the latest .NET 10.
+The SDK archive was checked against
 Microsoft's release-metadata SHA-512. No net8.0 or Fable support is claimed.
 
 The repository is public: https://github.com/FS-GG/FsQuint. Package IDs FsQuint and
