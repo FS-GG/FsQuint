@@ -8,7 +8,7 @@
 | Replay envelope / canonicalization | schema 1; existing SDD valid-value identities preserved |
 | Raw ITF canonicalization | 1; explicit maps, tuples and sets |
 | Raw dialect | Quint 0.32.0 ITF; Rust and TypeScript generated fixtures |
-| Process wrapper | Linux x64; Quint 0.32.0; Rust test/simulation backend |
+| Process wrapper | Linux x64; Quint 0.32.0; Rust evaluator 0.6.0 test/simulation backend |
 | Projection | Always consumer-owned and separately fingerprinted |
 
 Keep package and tool pins separate. Any change to decoding, comparison, raw input,

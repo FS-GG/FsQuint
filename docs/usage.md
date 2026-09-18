@@ -52,3 +52,18 @@ This is not a sandbox against malicious executables or detached processes.
 No network access or tool installation occurs in either package. Offline users may
 restore packages from a prepopulated NuGet cache and provision the pinned tool themselves.
 FsQuint version updates never select a new Quint version automatically.
+
+## Reproducing the Linux tooling checks
+
+Quint 0.32.0 uses Rust evaluator 0.6.0 for the supported test/run matrix. Provision
+both before running checks; otherwise Quint itself attempts a GitHub API download.
+The repository provisioning script verifies both published asset checksums and is
+used by CI and release qualification. The library does not invoke this script.
+
+```bash
+bash eng/provision-quint.sh /tmp/fsquint-tools
+QUINT_BIN=/tmp/fsquint-tools/quint QUINT_HOME=/tmp/fsquint-tools/home bash eng/check.sh
+```
+
+Callers running the optional tooling package provide the same `QUINT_HOME` when
+using this provisioned evaluator. Package updates do not upgrade either tool.
