@@ -8,6 +8,10 @@ on:
         description: Check NuGet trusted publishing configuration without publishing
         type: boolean
         default: true
+      readback_version:
+        description: Verify an already-published version without publishing
+        type: string
+        required: false
 permissions:
   contents: read
 concurrency:
@@ -23,11 +27,25 @@ jobs:
       id-token: write
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-dotnet@v6
         with:
           global-json-file: global.json
+      - name: Read-only recovery verification
+        if: inputs.readback_version != ''
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          READBACK_VERSION: ${{ inputs.readback_version }}
+        run: |
+          set -euo pipefail
+          [[ "$READBACK_VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[A-Za-z0-9.-]+)?$ ]]
+          source_head=$(git rev-parse "refs/tags/v$READBACK_VERSION^{commit}")
+          python3 eng/readback.py "$READBACK_VERSION" "$source_head"
+          bash eng/public-example.sh "$READBACK_VERSION"
       - name: NuGet trusted publishing identity
         id: nuget
+        if: inputs.readback_version == ''
         uses: NuGet/login@v1
         with:
           user: ${{ secrets.NUGET_USER || 'Paradigma11' }}
@@ -64,7 +82,7 @@ jobs:
         if: github.event_name == 'push'
         run: bash eng/public-example.sh
       - uses: actions/upload-artifact@v4
-        if: github.event_name == 'push'
+        if: always() && (github.event_name == 'push' || inputs.readback_version != '')
         with:
           name: packages-${{ github.sha }}
           path: |
