@@ -4,7 +4,7 @@ Feature identity: **FSQUINT-01**
 
 Date: **2026-09-18**
 
-Status: **implementation active; FQ0–FQ4 complete; consumer migrations and update qualification active**
+Status: **implementation active; FQ0–FQ6 complete; update and stable-release qualification active**
 
 Repository: **FS-GG/FsQuint**, public. Both preview packages published; stable promotion pending.
 
@@ -279,8 +279,8 @@ authority. Reuse existing evidence instead of restarting the completed Choreo pr
 - [x] FQ2 independent example and production-driver interface qualified.
 - [x] FQ3 optional tooling matrix and failure behavior qualified.
 - [x] FQ4 immutable public prerelease installed anonymously.
-- [ ] FQ5 SDD delegates without duplicate generic algorithms.
-- [ ] FQ6 Coordination consumes packages with existing evidence preserved.
+- [x] FQ5 SDD delegates without duplicate generic algorithms.
+- [x] FQ6 Coordination consumes packages with existing evidence preserved.
 - [ ] FQ7 actual downstream update, rollback and stable public consumption qualified.
 
 FQ2 and FQ3 can develop in parallel once shared interfaces stabilize; FQ5 and domain migration preparation
@@ -361,7 +361,9 @@ Preview 2 carries the fix; downstream update and stable qualification remain out
 
 Consumer qualification: SDD [PR996](https://github.com/FS-GG/FS.GG.SDD/pull/996)
 merged with unchanged public signatures and compiled-client compatibility. Its public
-preview release is in custody preparation. [PR997](https://github.com/FS-GG/FS.GG.SDD/pull/997)
+preview release passed [read-only recovery 35324708073](https://github.com/FS-GG/FS.GG.SDD/actions/runs/35324708073),
+including both-feed source/payload identity and clean installs. An unchanged client
+compiled against public SDD 2.0.1 also runs against the served 2.0.2-preview.1 assembly. [PR997](https://github.com/FS-GG/FS.GG.SDD/pull/997)
 updates to preview 2: 635 artifact and 1,355 command tests pass locally. A deliberate
 preview 1 downgrade fails the new regression; restoring preview 2 passes all eight
 replay tests. No observations or tool pins change.
@@ -370,8 +372,8 @@ Coordination [PR429](https://github.com/FS-GG/FS.GG.Coordination/pull/429) has l
 Host 78, PostgreSQL 34, architecture 657 and complete canonical qualification: Q1/Q2,
 eight positive invariants, 166 negative controls, 64 hosted progress states and 1,162
 hosted fault-safety states. Compiler/protocol identities and budgets are unchanged.
-The initial migration and subsequent preview 2 update await their merge gates. The
-update passes journal 3, Host 78 and PostgreSQL 34 locally; a preview 1 downgrade is
+The initial migration merged after all required CI gates passed. The subsequent
+[preview 2 update PR431](https://github.com/FS-GG/FS.GG.Coordination/pull/431) awaits its merge gates and passes journal 3, Host 78 and PostgreSQL 34 locally; a preview 1 downgrade is
 rejected, and rollback to preview 2 passes the three journal controls.
 
 The queue example and Coordination currently reference only core. Tooling is optional
