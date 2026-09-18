@@ -17,12 +17,6 @@ Model the relevant job state and required outcomes, explore possible execution
 orders, then harden the real workflow when Quint finds a counterexample. Keep the
 model tied to the workflow so later changes cannot silently invalidate the result.
 
-A fixed model normally does not need to run before every source-code build: its
-answer cannot change when the workflow, model, check configuration and toolchain stay
-the same. Run the check when one of those inputs changes. A per-run preflight is useful
-when each run supplies a different execution plan, shard selection, retry policy or
-other modeled input.
-
 The [CI workflow example](examples/CiPreflight) demonstrates a report job missing
 one test-shard dependency. Quint finds an order where the report runs too early,
 and the corrected design passes the same property. Its command-gating demonstration
