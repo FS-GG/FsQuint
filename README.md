@@ -10,6 +10,19 @@ supports replay against an implementation through a caller-supplied driver. The
 caller maps implementation state to model state for comparison. A match establishes
 agreement for that trace and mapping; it is not an unbounded proof of correctness.
 
+## Catch CI mistakes before long test runs
+
+A quick Quint check can catch a mistake in a CI plan before expensive tests start.
+Model the job dependencies and required outcomes, check possible execution orders,
+and make that preflight a prerequisite for the long run. A failing check provides
+a counterexample that explains the scheduling mistake.
+
+The [CI preflight example](examples/CiPreflight) demonstrates a report job missing
+one test-shard dependency. Quint finds an order where the report runs too early;
+an F# gate using FsQuint.Tooling returns failure, so the expensive command never
+starts. The corrected plan passes the same check. This targets mistakes represented
+in the model; a passing sampled check does not replace the actual test suite.
+
 Related Quint tools:
 
 - [Quint CLI](https://quint.sh/docs/quint): generate ITF traces, including with its Rust evaluator.

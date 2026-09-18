@@ -14,6 +14,11 @@ jobs:
           global-json-file: global.json
       - name: Provision pinned Quint
         run: bash eng/provision-quint.sh "$RUNNER_TEMP/quint-tools"
+      - name: Check independent CI preflight example
+        env:
+          QUINT_BIN: ${{ runner.temp }}/quint-tools/quint
+          QUINT_HOME: ${{ runner.temp }}/quint-tools/home
+        run: bash examples/CiPreflight/check.sh
       - name: Qualify core, tooling and external package consumer
         env:
           QUINT_BIN: ${{ runner.temp }}/quint-tools/quint
