@@ -9,6 +9,16 @@ import time
 import urllib.error
 import urllib.request
 import zipfile
+from urllib.parse import urlsplit
+
+class SafeRedirect(urllib.request.HTTPRedirectHandler):
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        redirected = super().redirect_request(req, fp, code, msg, headers, newurl)
+        if redirected is not None and urlsplit(req.full_url).netloc != urlsplit(newurl).netloc:
+            redirected.remove_header("Authorization")
+        return redirected
+
+reader = urllib.request.build_opener(SafeRedirect())
 
 version = sys.argv[1]
 root = Path('artifacts/readback')
@@ -26,7 +36,7 @@ receipts = {}
 for package in ['FsQuint', 'FsQuint.Tooling']:
     name = package.lower()
     local = Path(f'artifacts/packages/{package}.{version}.nupkg')
-    expected = payloads(local)
+    expected = payloads(local) if local.exists() else None
     for feed in ['github', 'nuget']:
         url = (f'https://nuget.pkg.github.com/FS-GG/download/{name}/{version}/{name}.{version}.nupkg'
                if feed == 'github' else
@@ -37,7 +47,7 @@ for package in ['FsQuint', 'FsQuint.Tooling']:
             headers['Authorization'] = 'Basic ' + base64.b64encode(credential).decode()
         for attempt in range(40):
             try:
-                with urllib.request.urlopen(urllib.request.Request(url, headers=headers), timeout=30) as response:
+                with reader.open(urllib.request.Request(url, headers=headers), timeout=30) as response:
                     content = response.read()
                 break
             except urllib.error.HTTPError as error:
@@ -47,6 +57,8 @@ for package in ['FsQuint', 'FsQuint.Tooling']:
         target = root / f'{name}.{feed}.nupkg'
         target.write_bytes(content)
         actual = payloads(target)
+        if expected is None:
+            expected = actual
         if expected != actual:
             raise ValueError(f'{package}: {feed} differs from qualified payload')
         receipts[f'{package}:{feed}'] = {'archiveSha256': hashlib.sha256(content).hexdigest(), 'payloads': actual}
