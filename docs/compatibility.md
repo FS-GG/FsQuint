@@ -25,5 +25,9 @@ The linked generic replay harness is removed when Coordination adopts the public
 FsQuint maintainers own issue triage, generic regressions, API/schema versioning and
 release integrity. Consumers own model validity, effect isolation and adoption. Report
 bugs with package/tool versions, smallest redistributable fixture, projection and exact
-outcome. Do not include credentials or private trace data. During preview, fixes target
-the newest preview; stable support policy is finalized at FQ7. No service SLA is implied.
+outcome. Do not include credentials or private trace data. Fixes target the newest release. During the 0.1 line, patch releases preserve public
+API and valid canonical identities; breaking changes require a new minor line and explicit
+migration notes. Deprecated SDD CLR types remain owned by SDD until its own major release.
+Tool-matrix extensions need genuine generated fixtures and process qualification. No
+service SLA or older-line backport commitment is implied. Consumer update PRs must pass
+their own gates; maintainers do not bypass them or automatically refresh observations.

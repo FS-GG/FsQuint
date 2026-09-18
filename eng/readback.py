@@ -50,14 +50,16 @@ for package in ['FsQuint', 'FsQuint.Tooling']:
         if feed == 'github':
             credential = (os.environ['GITHUB_ACTOR'] + ':' + os.environ['GH_TOKEN']).encode()
             headers['Authorization'] = 'Basic ' + base64.b64encode(credential).decode()
-        for attempt in range(40):
+        for attempt in range(120):
             try:
                 with reader.open(urllib.request.Request(url, headers=headers), timeout=30) as response:
                     content = response.read()
                 break
             except urllib.error.HTTPError as error:
-                if error.code != 404 or attempt == 39:
+                if error.code != 404 or attempt == 119:
                     raise
+                if attempt % 6 == 0:
+                    print(f"{package}: {feed} has not exposed the download yet; retrying", flush=True)
                 time.sleep(10)
         target = root / f'{name}.{feed}.nupkg'
         target.write_bytes(content)
