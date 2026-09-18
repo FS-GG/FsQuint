@@ -6,9 +6,9 @@ Date: **2026-09-18**
 
 Status: **implementation active; FQ0–FQ4 complete; consumer migrations and update qualification active**
 
-Repository: **FS-GG/FsQuint**, public. Package names checked; publication pending.
+Repository: **FS-GG/FsQuint**, public. Both preview packages published; stable promotion pending.
 
-Planning owner: FS-GG; implementation/package owner: the future FsQuint maintainers.
+Planning owner: FS-GG; implementation/package owner: FsQuint maintainers.
 
 Consumers: an independent F# example, FS.GG.Coordination, and the applicable FS.GG.SDD replay surface.
 
@@ -82,10 +82,8 @@ flowchart BT
   Core[FsQuint] --> Runtime[.NET and FSharp.Core]
   Tooling[FsQuint.Tooling] --> Core
   Example[Independent F# example] --> Core
-  Example --> Tooling
   SDD[SDD replay compatibility facade] --> Core
   Coordination[Coordination domain adapters and tests] --> Core
-  Coordination --> Tooling
 ```
 
 Arrows mean dependency. No edge points from FsQuint to a consumer. Production libraries need not reference
@@ -360,3 +358,23 @@ was accepted and fingerprinted identically to U+FFFD through UTF-8 replacement f
 The regression fails on preview 1; the fix rejects malformed strings across text, record
 keys, state bindings and trace provenance. Valid Unicode/canonical identities are unchanged.
 Preview 2 carries the fix; downstream update and stable qualification remain outstanding.
+
+Consumer qualification: SDD [PR996](https://github.com/FS-GG/FS.GG.SDD/pull/996)
+merged with unchanged public signatures and compiled-client compatibility. Its public
+preview release is in custody preparation. [PR997](https://github.com/FS-GG/FS.GG.SDD/pull/997)
+updates to preview 2: 635 artifact and 1,355 command tests pass locally. A deliberate
+preview 1 downgrade fails the new regression; restoring preview 2 passes all eight
+replay tests. No observations or tool pins change.
+
+Coordination [PR429](https://github.com/FS-GG/FS.GG.Coordination/pull/429) has local
+Host 78, PostgreSQL 34, architecture 657 and complete canonical qualification: Q1/Q2,
+eight positive invariants, 166 negative controls, 64 hosted progress states and 1,162
+hosted fault-safety states. Compiler/protocol identities and budgets are unchanged.
+The initial migration and subsequent preview 2 update await their merge gates. The
+update passes journal 3, Host 78 and PostgreSQL 34 locally; a preview 1 downgrade is
+rejected, and rollback to preview 2 passes the three journal controls.
+
+The queue example and Coordination currently reference only core. Tooling is optional
+and independently qualified by real process tests; no consumer reference is invented
+merely to exercise a package dependency. Registry ownership and support policy are
+recorded in [.github PR3537](https://github.com/FS-GG/.github/pull/3537).
