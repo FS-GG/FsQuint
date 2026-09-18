@@ -364,7 +364,7 @@ merged with unchanged public signatures and compiled-client compatibility. Its p
 preview release passed [read-only recovery 35324708073](https://github.com/FS-GG/FS.GG.SDD/actions/runs/35324708073),
 including both-feed source/payload identity and clean installs. An unchanged client
 compiled against public SDD 2.0.1 also runs against the served 2.0.2-preview.1 assembly. [PR997](https://github.com/FS-GG/FS.GG.SDD/pull/997)
-updates to preview 2: 635 artifact and 1,355 command tests pass locally. A deliberate
+merged the preview 2 update after CI; 635 artifact and 1,355 command tests also pass locally. A deliberate
 preview 1 downgrade fails the new regression; restoring preview 2 passes all eight
 replay tests. No observations or tool pins change.
 
@@ -380,3 +380,11 @@ The queue example and Coordination currently reference only core. Tooling is opt
 and independently qualified by real process tests; no consumer reference is invented
 merely to exercise a package dependency. Registry ownership and support policy are
 recorded in [.github PR3537](https://github.com/FS-GG/.github/pull/3537).
+
+Update automation: Coordination [PR432](https://github.com/FS-GG/FS.GG.Coordination/pull/432)
+adds a digest-bound current updater inventory while retaining the original GS2 corpus
+and seal. Renovate 44.99.0 detects the central FsQuint pin; eight architecture checks
+include five new policy-weakening mutations and the existing alternate-route controls.
+SDD already has the organization preset; its stable adoption explicitly routes FsQuint
+to public NuGet and disables automatic merging. A real extraction scan exposed its
+obsolete private-feed secret interpolation, which is removed with that adoption.

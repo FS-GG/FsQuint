@@ -20,7 +20,7 @@ On failure, retain the prior immutable pin and its matching evidence. No runtime
 The SDD namespace and CLR types stay in its assembly during migration. Its compatibility
 facade translates only; FsQuint owns generic algorithms. Coordination owns hosted-writer
 policies and Choreo parsing/projection. FsQuint contains no FS.GG package reference.
-The linked generic replay harness is removed when Coordination adopts the public package.
+Coordination has adopted the public package and removed the linked generic replay harness.
 
 FsQuint maintainers own issue triage, generic regressions, API/schema versioning and
 release integrity. Consumers own model validity, effect isolation and adoption. Report
