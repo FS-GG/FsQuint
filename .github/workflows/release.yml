@@ -53,8 +53,8 @@ jobs:
           PUBLIC_PACKAGE_KEY: ${{ steps.nuget.outputs.NUGET_API_KEY }}
         run: |
           set -euo pipefail
-          dotnet nuget push 'artifacts/packages/*.nupkg' --source https://nuget.pkg.github.com/FS-GG/index.json --api-key "$GH_PACKAGE_KEY" --skip-duplicate --no-symbols
-          dotnet nuget push 'artifacts/packages/*.nupkg' --source https://api.nuget.org/v3/index.json --api-key "$PUBLIC_PACKAGE_KEY" --skip-duplicate
+          dotnet nuget push 'artifacts/packages/FsQuint*.nupkg' --source https://nuget.pkg.github.com/FS-GG/index.json --api-key "$GH_PACKAGE_KEY" --skip-duplicate --no-symbols
+          dotnet nuget push 'artifacts/packages/FsQuint*.nupkg' --source https://api.nuget.org/v3/index.json --api-key "$PUBLIC_PACKAGE_KEY" --skip-duplicate
       - name: Read back both feeds
         if: github.event_name == 'push'
         env:
