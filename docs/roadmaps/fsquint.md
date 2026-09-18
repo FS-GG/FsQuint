@@ -357,7 +357,7 @@ FQ7 upstream defect reproduced against served preview 1: an unpaired UTF-16 surr
 was accepted and fingerprinted identically to U+FFFD through UTF-8 replacement fallback.
 The regression fails on preview 1; the fix rejects malformed strings across text, record
 keys, state bindings and trace provenance. Valid Unicode/canonical identities are unchanged.
-Preview 2 carries the fix; downstream update and stable qualification remain outstanding.
+Preview 2 carries the fix. Stable 0.1.0 is now publicly verified; final downstream stable adoption remains outstanding.
 
 Consumer qualification: SDD [PR996](https://github.com/FS-GG/FS.GG.SDD/pull/996)
 merged with unchanged public signatures and compiled-client compatibility. Its public
@@ -388,3 +388,18 @@ include five new policy-weakening mutations and the existing alternate-route con
 SDD already has the organization preset; its stable adoption explicitly routes FsQuint
 to public NuGet and disables automatic merging. A real extraction scan exposed its
 obsolete private-feed secret interpolation, which is removed with that adoption.
+
+Stable publication: [PR9](https://github.com/FS-GG/FsQuint/pull/9) merged at
+`34eeca981c136144ced73a3f98b5ce04218e89c7`; immutable tag `v0.1.0` publishes both
+packages and symbols. [Release verification](https://github.com/FS-GG/FsQuint/actions/runs/35330871321)
+passed both-feed payload/source readback and the anonymous independent queue example.
+CI explicitly provisions checksum-pinned Quint 0.32.0 and Rust evaluator 0.6.0,
+avoiding an implicit evaluator download that exposed a GitHub API 403 during qualification.
+All 73 core/tooling checks pass with the explicitly provisioned toolchain.
+
+Final adoption is tracked by SDD [PR998](https://github.com/FS-GG/FS.GG.SDD/pull/998),
+Coordination [PR432](https://github.com/FS-GG/FS.GG.Coordination/pull/432), and the
+[stable registry update](https://github.com/FS-GG/.github/pull/3540). Local SDD
+635 artifact and 1,355 command tests pass against served stable bytes; Coordination
+Host 78, PostgreSQL 34 and journal 3 also pass. FQ7 stays open until these final
+consumer changes and the coherent SDD stable release finish.
