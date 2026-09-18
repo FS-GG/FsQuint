@@ -1,0 +1,22 @@
+{
+  "version": 1,
+  "dependencies": {
+    "net10.0": {
+      "FSharp.Core": {
+        "type": "Direct",
+        "requested": "[10.1.302, )",
+        "resolved": "10.1.302",
+        "contentHash": "bN7XMQrAQg1dyHScJ7FcsznERBkvm74LtIo1O6C5mUzgbDqSwNbDpb3+nBGaJAjDmtC/suK5Vx5pFysKY6Hm+Q=="
+      },
+      "FsQuint": {
+        "type": "Direct",
+        "requested": "[0.1.0-preview.2, )",
+        "resolved": "0.1.0-preview.2",
+        "contentHash": "sGtx6Utp27mMvNIENgk7wDBtB/kW2USvnvdphqObvV3/VQy9sOe+pFB7pJPxjZe9szJhJBvyzhsD1CbkO2ZF6Q==",
+        "dependencies": {
+          "FSharp.Core": "10.1.302"
+        }
+      }
+    }
+  }
+}
