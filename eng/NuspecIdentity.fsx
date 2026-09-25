@@ -16,7 +16,7 @@ type Identity = {
 }
 
 let private invalid message = raise (InvalidDataException message)
-let private sha = Regex("^[0-9a-f]{40}$", RegexOptions.CultureInvariant)
+let private sha = Regex(@"\A[0-9a-f]{40}\z", RegexOptions.CultureInvariant)
 
 let private one name (elements: seq<XElement>) =
     match elements |> Seq.toList with
