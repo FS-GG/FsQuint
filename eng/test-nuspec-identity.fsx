@@ -35,20 +35,27 @@ let accepts label path =
         failwithf "%s: wrong identity %A" label identity
     passed <- passed + 1
     printfn "PASS %s" label
-let refuses label path =
+let refusesExpected label path expectedCommit =
     try
-        verify path "FsQuint" "0.1.0" commit |> ignore
+        verify path "FsQuint" "0.1.0" expectedCommit |> ignore
         failwithf "%s: expected refusal" label
     with :? InvalidDataException ->
         passed <- passed + 1
         printfn "PASS %s" label
+let refuses label path = refusesExpected label path commit
 
 try
     accepts "exact nuspec package and commit" good
     refuses "wrong package id" (archive "wrong-id.nupkg" [ "FsQuint.nuspec", nuspec "Foreign" "0.1.0" commit; "lib/a.dll", payload ])
     refuses "wrong version" (archive "wrong-version.nupkg" [ "FsQuint.nuspec", nuspec "FsQuint" "0.2.0" commit; "lib/a.dll", payload ])
     refuses "wrong commit" (archive "wrong-commit.nupkg" [ "FsQuint.nuspec", nuspec "FsQuint" "0.1.0" (String.replicate 40 "b"); "lib/a.dll", payload ])
+    refusesExpected "newline after expected commit"
+        (archive "newline-commit.nupkg" [ "FsQuint.nuspec", nuspec "FsQuint" "0.1.0" (commit + "&#10;"); "lib/a.dll", payload ])
+        (commit + "\n")
     refuses "duplicate nuspec" (archive "duplicate.nupkg" [ "FsQuint.nuspec", validSpec; "Foreign.nuspec", validSpec; "lib/a.dll", payload ])
+    refuses "duplicate exact ZIP member" (archive "duplicate-member.nupkg" [ "FsQuint.nuspec", validSpec; "FsQuint.nuspec", validSpec; "lib/a.dll", payload ])
+    refuses "duplicate XML id" (archive "duplicate-id.nupkg" [ "FsQuint.nuspec", validSpec.Replace("<id>FsQuint</id>", "<id>FsQuint</id><id>FsQuint</id>"); "lib/a.dll", payload ])
+    refuses "duplicate XML repository" (archive "duplicate-repository.nupkg" [ "FsQuint.nuspec", validSpec.Replace("</metadata>", $"<repository type=\"git\" commit=\"{commit}\"/></metadata>"); "lib/a.dll", payload ])
     refuses "nested nuspec" (archive "nested.nupkg" [ "nested/FsQuint.nuspec", validSpec; "lib/a.dll", payload ])
     refuses "missing nuspec" (archive "missing.nupkg" [ ("lib/a.dll", payload) ])
     refuses "malformed XML" (archive "malformed.nupkg" [ "FsQuint.nuspec", "<package>"; "lib/a.dll", payload ])
