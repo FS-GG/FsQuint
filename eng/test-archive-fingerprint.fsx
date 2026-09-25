@@ -58,7 +58,10 @@ try
     expectFailure "wrong archive digest" "digest differs" (fun () -> compare source wrongDigest)
 
     let wrongMode = archive "mode.nupkg" [ ("lib/net10.0/FsQuint.dll", "v1", 0o100755) ]
-    expectFailure "wrong archive mode" "Unix mode differs" (fun () -> compare source wrongMode)
+    compare source wrongMode
+    if (inspect source |> List.head).UnixMode = (inspect wrongMode |> List.head).UnixMode then
+        failwith "mode-only fixture did not change the recorded mode"
+    printfn "PASS mode-only change matches the payload readback policy"
 
     let duplicate =
         archive "duplicate.nupkg" [ ("lib/net10.0/FsQuint.dll", "v1", 0o100644); ("lib/net10.0/FsQuint.dll", "v1", 0o100644) ]

@@ -106,9 +106,9 @@ def check(package):
         expect("wrong-member", "archive members differ", rename=target_member)
         expect("wrong-digest", "digest differs", change=target_member)
         expect("wrong-nuspec", "digest differs", change=spec_member)
-        changed_mode = expect("wrong-mode", "Unix mode differs", mode=target_member)
-        # Python readback compares names and payload digests only; mode is a
-        # candidate F# strengthening and must be checked against served feeds.
+        changed_mode = expect("wrong-mode", None, mode=target_member)
+        # The receiver contract compares names and payload digests. Mode is
+        # retained in inspection evidence, but not cross-feed equality.
         assert python_payloads(package) == python_payloads(changed_mode)
         passed += 1
 

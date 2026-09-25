@@ -1,6 +1,6 @@
 // FSC-08 source primitive. This is not wired into release/readback.py.
-// Feed qualification must decide whether archive mode bits are part of the
-// cross-feed contract before any receiver switch.
+// Cross-feed equality follows the live Python readback's member-name and
+// payload-digest contract. Mode is recorded for audit and symlink refusal.
 module ArchiveFingerprint
 
 open System
@@ -72,6 +72,3 @@ let compare (qualified: string) (served: string) : unit =
 
         if before.Sha256 <> after.Sha256 then
             invalidData $"archive member '{name}' digest differs"
-
-        if before.UnixMode <> after.UnixMode then
-            invalidData $"archive member '{name}' Unix mode differs"

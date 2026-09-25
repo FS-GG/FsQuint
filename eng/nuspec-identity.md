@@ -10,9 +10,7 @@ manifests. Run `dotnet fsi eng/test-nuspec-identity.fsx` for local controls.
 
 The current Python `eng/readback.py` checks the served `.nuspec` repository
 commit when one is supplied. It compares names and payload digests but ignores
-ZIP mode. The F# archive fingerprint compares Unix modes. Draft #16 proves
-mode-only mutations are accepted by the Python projection and refused by the
-F# candidate on locally packed archives, whose members all carried `100644`.
-The package owner must inspect real GitHub and nuget.org served archives and
-decide whether mode is contractual before any receiver adoption; local packs
-alone do not resolve that policy.
+ZIP mode. The stacked source-only mode policy draft aligns F# cross-feed
+equality with that behavior while preserving mode inspection and symlink
+refusal. Draft #16 recorded the earlier mismatch on locally packed archives;
+the mode policy decision does not establish served-feed or installed parity.

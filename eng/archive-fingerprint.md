@@ -13,12 +13,15 @@ dotnet fsi eng/test-archive-fingerprint.fsx
 ```
 
 The 17 controls cover wrong members, nested signatures, changed payload and
-manifest digests, changed mode, duplicates, empty and signature-only archives,
-unsafe paths, symlinks, Unicode member names, and reordered entries. One fixture
-embeds the exact bytes of the tracked `FsQuint.fsproj`; it is not a packed
-package or a served feed artifact. The mode and path checks are candidate
-strengthenings and need qualification against real served archives before
-adoption. This comparator does not validate package identity, `.nuspec`
-semantics, or publication receipts. The Python `eng/readback.py` remains the
+manifest digests, mode-only payload equality, duplicates, empty and
+signature-only archives, unsafe paths, symlinks, Unicode member names, and
+reordered entries. One fixture embeds the exact bytes of the tracked
+`FsQuint.fsproj`; it is not a packed package or a served feed artifact.
+Cross-feed equality compares names and payload digests, as the current Python
+readback does; inspection still records mode and refuses symlink entries. The
+symlink and path checks are candidate strengthenings that need served-archive
+qualification before adoption. This comparator does not validate package
+identity, `.nuspec` semantics, or publication receipts. The Python
+`eng/readback.py` remains the
 release receiver; the versioned package roster, feeds, publication and retry
 behavior are unchanged.
