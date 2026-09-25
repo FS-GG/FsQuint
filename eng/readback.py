@@ -4,6 +4,7 @@ import hashlib
 import json
 import re
 import xml.etree.ElementTree as ET
+import xml.parsers.expat as expat
 import os
 from pathlib import Path
 import sys
@@ -61,6 +62,35 @@ def select_nuspec(archive, package):
         raise ValueError(f'{package}: archive must contain one exact root nuspec')
     return expected
 
+def verify_nuspec_xml(archive, spec, package, version, expected_commit):
+    body = archive.read(spec)
+    parser = expat.ParserCreate()
+    def refuse_doctype(*_):
+        raise ValueError(f'{package}: nuspec DTD is prohibited')
+    parser.StartDoctypeDeclHandler = refuse_doctype
+    try:
+        parser.Parse(body, True)
+    except expat.ExpatError as error:
+        raise ValueError(f'{package}: nuspec XML is invalid') from error
+    root = ET.fromstring(body)
+    def local_name(node):
+        return node.tag.rsplit('}', 1)[-1] if isinstance(node.tag, str) else None
+    def one(parent, name):
+        matches = [node for node in parent if local_name(node) == name]
+        if len(matches) != 1:
+            raise ValueError(f'{package}: nuspec must contain one {name}')
+        return matches[0]
+    if local_name(root) != 'package':
+        raise ValueError(f'{package}: nuspec package root is invalid')
+    metadata = one(root, 'metadata')
+    actual_id = ''.join(one(metadata, 'id').itertext())
+    actual_version = ''.join(one(metadata, 'version').itertext())
+    repository = one(metadata, 'repository')
+    if actual_id != package or actual_version != version:
+        raise ValueError(f'{package}: nuspec package identity differs')
+    if expected_commit and repository.attrib.get('commit') != expected_commit:
+        raise ValueError(f'{package}: source commit differs from release tag')
+
 receipts = {}
 for package in ['FsQuint', 'FsQuint.Tooling']:
     name = package.lower()
@@ -90,10 +120,7 @@ for package in ['FsQuint', 'FsQuint.Tooling']:
         actual = payloads(target)
         with zipfile.ZipFile(target) as archive:
             spec = select_nuspec(archive, package)
-            metadata = ET.fromstring(archive.read(spec))
-            repository = next(node for node in metadata.iter() if node.tag.endswith('}repository') or node.tag == 'repository')
-            if expected_commit and repository.attrib.get('commit') != expected_commit:
-                raise ValueError(f'{package}: source commit differs from release tag')
+            verify_nuspec_xml(archive, spec, package, version, expected_commit)
         if expected is None:
             expected = actual
         if expected != actual:

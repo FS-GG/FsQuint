@@ -10,7 +10,9 @@ manifests. Run `dotnet fsi eng/test-nuspec-identity.fsx` for local controls.
 
 The current Python `eng/readback.py` checks the served `.nuspec` repository
 commit when one is supplied. A stacked source draft requires its archive to
-contain exactly one root `<package>.nuspec`; XML identity parity remains open.
+contain exactly one root `<package>.nuspec`; a subsequent draft adds bounded
+XML ID, version, structure, and DTD guards. Full parser and expected-commit
+authority parity remain open.
 Python compares names and payload digests but ignores ZIP mode. The stacked
 source-only mode policy draft aligns F# cross-feed
 equality with that behavior while preserving mode inspection and symlink
