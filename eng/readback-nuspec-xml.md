@@ -21,8 +21,9 @@ to the selected package. It retains the existing commit comparison when an
 expected commit is supplied. Both locally packed 0.1.0 packages passed the
 source-only XML identity check, without making those packs a release baseline.
 
-This draft does not establish the authority, presence, or exact format of the
-caller-supplied commit. It does not bound decompression or prove complete
+The stacked commit-source draft checks a caller value against the local
+version tag's commit object; tag protection and publication authority remain
+unproved. This draft does not bound decompression or prove complete
 Python/F# parser parity. Archive equality remains exact ZIP names and payload
 SHA-256 digests; Unix mode remains inspection evidence and a symlink guard.
 Acceptance of #15 through #22, access to both served feeds, and installed
