@@ -25,7 +25,9 @@ those cases; matching CLI and event commits pass. The real repository's
 `34eeca981c136144ced73a3f98b5ce04218e89c7` at this checkpoint.
 
 Git commit object IDs are immutable once selected, but a tag reference can be
-retargeted. This source-only check does not prove protected tags, a signed
+retargeted. A stacked source draft rechecks the tag at bounded readback
+checkpoints; it cannot detect adversarial ABA or movement after its last
+check. This source-only check does not prove protected tags, a signed
 tag, an independently sealed publication receipt, or the stability of the tag
 reference after selection. It does not fetch served archives or establish
 installed receiver parity. Exact ZIP names and SHA-256 payload digests remain
