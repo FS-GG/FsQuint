@@ -75,6 +75,9 @@ def payloads(path):
             mode = (entry.external_attr >> 16) & 0xffff
             if mode & 0o170000 == 0o120000:
                 raise ValueError(f'Symlink ZIP entry: {name!r}')
+        if not any(entry.filename != '.signature.p7s' and not entry.is_dir()
+                   for entry in entries):
+            raise ValueError('Archive has no payload members')
         return {entry.filename: hashlib.sha256(archive.read(entry)).hexdigest()
                 for entry in entries if entry.filename != '.signature.p7s'}
 
