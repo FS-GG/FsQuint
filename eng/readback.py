@@ -35,6 +35,8 @@ def payloads(path):
         names = [entry.filename for entry in entries]
         if len(names) != len(set(names)):
             raise ValueError('Duplicate ZIP entry')
+        ascii_fold = str.maketrans('ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz')
+        aliases = set()
         for entry in entries:
             name = entry.filename
             path_part = name[:-1] if name.endswith('/') else name
@@ -42,6 +44,10 @@ def payloads(path):
                     or any(char in name for char in ('\\', ':', '\x00'))
                     or any(segment in ('', '.', '..') for segment in path_part.split('/'))):
                 raise ValueError(f'Unsafe ZIP entry: {name!r}')
+            folded = name.translate(ascii_fold)
+            if folded in aliases:
+                raise ValueError(f'Case-alias ZIP entry: {name!r}')
+            aliases.add(folded)
             mode = (entry.external_attr >> 16) & 0xffff
             if mode & 0o170000 == 0o120000:
                 raise ValueError(f'Symlink ZIP entry: {name!r}')
