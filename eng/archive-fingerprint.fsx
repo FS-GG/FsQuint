@@ -24,9 +24,17 @@ let private safeMemberName (name: string) =
     && not (name.Contains('\\') || name.Contains(':') || name.Contains(char 0))
     && (path.Split('/') |> Array.forall (fun segment -> segment <> "" && segment <> "." && segment <> ".."))
 
+let private asciiFold (name: string) =
+    let characters = name.ToCharArray()
+    for index in 0 .. characters.Length - 1 do
+        if characters.[index] >= 'A' && characters.[index] <= 'Z' then
+            characters.[index] <- char (int characters.[index] + 32)
+    String(characters)
+
 let inspect (path: string) : Member list =
     use archive = ZipFile.OpenRead path
     let names = System.Collections.Generic.HashSet<string>(StringComparer.Ordinal)
+    let aliases = System.Collections.Generic.HashSet<string>(StringComparer.Ordinal)
 
     [
         for entry in archive.Entries do
@@ -35,6 +43,9 @@ let inspect (path: string) : Member list =
 
             if not (safeMemberName entry.FullName) then
                 invalidData $"{path}: unsafe archive member '{entry.FullName}'"
+
+            if not (aliases.Add(asciiFold entry.FullName)) then
+                invalidData $"{path}: case-alias archive member '{entry.FullName}'"
 
             let mode = (entry.ExternalAttributes >>> 16) &&& 0xffff
             if mode &&& 0o170000 = 0o120000 then

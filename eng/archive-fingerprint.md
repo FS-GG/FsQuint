@@ -2,7 +2,8 @@
 
 `archive-fingerprint.fsx` is a read-only F# source primitive. It records each
 archive member's exact name, SHA-256 digest, and ZIP Unix mode bits. It refuses
-duplicate, unsafe, or symlink member names and archives without a payload. It
+duplicate, ASCII case-alias, unsafe, or symlink member names and archives
+without a payload. It
 permits a feed-added root `.signature.p7s`, matching the current readback
 policy's signature exception.
 
