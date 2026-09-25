@@ -31,11 +31,22 @@ root.mkdir(parents=True, exist_ok=True)
 
 def payloads(path):
     with zipfile.ZipFile(path) as archive:
-        names = archive.namelist()
+        entries = archive.infolist()
+        names = [entry.filename for entry in entries]
         if len(names) != len(set(names)):
             raise ValueError('Duplicate ZIP entry')
-        return {name: hashlib.sha256(archive.read(name)).hexdigest()
-                for name in names if name != '.signature.p7s'}
+        for entry in entries:
+            name = entry.filename
+            path_part = name[:-1] if name.endswith('/') else name
+            if (not path_part.strip() or name.startswith('/')
+                    or any(char in name for char in ('\\', ':', '\x00'))
+                    or any(segment in ('', '.', '..') for segment in path_part.split('/'))):
+                raise ValueError(f'Unsafe ZIP entry: {name!r}')
+            mode = (entry.external_attr >> 16) & 0xffff
+            if mode & 0o170000 == 0o120000:
+                raise ValueError(f'Symlink ZIP entry: {name!r}')
+        return {entry.filename: hashlib.sha256(archive.read(entry)).hexdigest()
+                for entry in entries if entry.filename != '.signature.p7s'}
 
 receipts = {}
 for package in ['FsQuint', 'FsQuint.Tooling']:
