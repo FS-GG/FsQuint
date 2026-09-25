@@ -43,6 +43,11 @@ def select_expected_commit(version, supplied_commit, repository=None):
         raise ValueError(f'{version}: supplied commit differs from source tag')
     return source_commit
 
+def verify_source_tag_stable(version, selected_commit, repository=None):
+    current = select_expected_commit(version, None, repository)
+    if current != selected_commit:
+        raise ValueError(f'{version}: source tag moved during readback')
+
 expected_commit = select_expected_commit(
     version, sys.argv[2] if len(sys.argv) > 2 else os.environ.get('GITHUB_SHA'))
 root = Path('artifacts/readback')
@@ -115,6 +120,7 @@ for package in ['FsQuint', 'FsQuint.Tooling']:
     local = Path(f'artifacts/packages/{package}.{version}.nupkg')
     expected = payloads(local) if local.exists() else None
     for feed in ['github', 'nuget']:
+        verify_source_tag_stable(version, expected_commit)
         url = (f'https://nuget.pkg.github.com/FS-GG/download/{name}/{version}/{name}.{version}.nupkg'
                if feed == 'github' else
                f'https://api.nuget.org/v3-flatcontainer/{name}/{version}/{name}.{version}.nupkg')
@@ -133,6 +139,7 @@ for package in ['FsQuint', 'FsQuint.Tooling']:
                 if attempt % 6 == 0:
                     print(f"{package}: {feed} has not exposed the download yet; retrying", flush=True)
                 time.sleep(10)
+        verify_source_tag_stable(version, expected_commit)
         target = root / f'{name}.{feed}.nupkg'
         target.write_bytes(content)
         actual = payloads(target)
@@ -144,5 +151,6 @@ for package in ['FsQuint', 'FsQuint.Tooling']:
         if expected != actual:
             raise ValueError(f'{package}: {feed} differs from qualified payload')
         receipts[f'{package}:{feed}'] = {'archiveSha256': hashlib.sha256(content).hexdigest(), 'payloads': actual}
+verify_source_tag_stable(version, expected_commit)
 (root / 'receipt.json').write_text(json.dumps(receipts, indent=2) + '\n')
 print('Both package payloads match both feeds.')
