@@ -16,12 +16,11 @@ candidate and an exact root name for the selected package. The test also
 covers a valid root manifest with feed-added signature and a missing manifest.
 Both local 0.1.0 packages have the exact expected root names.
 
-This bounded change does not validate the XML package ID or version, reject
-duplicate XML metadata/repository elements or DTDs, or prove the caller's
-expected commit is authoritative. The F# candidate has separate checks for
-several of those cases; full Python/F# parity remains open. Exact ZIP member
-names and SHA-256 payload digests remain cross-feed equality keys, while Unix
-mode remains inspection evidence and a symlink guard. No feed request,
+The stacked XML identity draft adds source-only checks for ID, version,
+duplicate XML metadata/repository elements, and DTDs. It does not prove the
+caller's expected commit is authoritative or complete Python/F# parity.
+Exact ZIP member names and SHA-256 payload digests remain cross-feed equality
+keys, while Unix mode remains inspection evidence and a symlink guard. No feed request,
 readback output, package publication, merge, or receiver switch occurs in
-this draft. Acceptance of #15 through #21, GitHub Packages served-byte
+this draft. Acceptance of #15 through #22, GitHub Packages served-byte
 access, and installed receiver parity remain prerequisites.
