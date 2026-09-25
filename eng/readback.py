@@ -7,6 +7,7 @@ import xml.etree.ElementTree as ET
 import xml.parsers.expat as expat
 import os
 from pathlib import Path
+import subprocess
 import sys
 import time
 import urllib.error
@@ -26,7 +27,24 @@ reader = urllib.request.build_opener(SafeRedirect())
 version = sys.argv[1]
 if not re.fullmatch(r"[0-9]+\.[0-9]+\.[0-9]+(?:-[A-Za-z0-9.-]+)?", version):
     raise ValueError("Invalid package version")
-expected_commit = sys.argv[2] if len(sys.argv) > 2 else os.environ.get('GITHUB_SHA')
+
+def select_expected_commit(version, supplied_commit, repository=None):
+    if not re.fullmatch(r"[0-9]+\.[0-9]+\.[0-9]+(?:-[A-Za-z0-9.-]+)?", version):
+        raise ValueError('Invalid package version')
+    tag = f'refs/tags/v{version}^{{commit}}'
+    result = subprocess.run(
+        ['git', 'rev-parse', '--verify', '--end-of-options', tag],
+        cwd=repository, text=True, capture_output=True, check=False,
+    )
+    source_commit = result.stdout.strip()
+    if result.returncode != 0 or not re.fullmatch(r'[0-9a-f]{40}', source_commit):
+        raise ValueError(f'{version}: source tag commit is unavailable')
+    if supplied_commit is not None and supplied_commit != source_commit:
+        raise ValueError(f'{version}: supplied commit differs from source tag')
+    return source_commit
+
+expected_commit = select_expected_commit(
+    version, sys.argv[2] if len(sys.argv) > 2 else os.environ.get('GITHUB_SHA'))
 root = Path('artifacts/readback')
 root.mkdir(parents=True, exist_ok=True)
 
