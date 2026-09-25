@@ -54,6 +54,13 @@ def payloads(path):
         return {entry.filename: hashlib.sha256(archive.read(entry)).hexdigest()
                 for entry in entries if entry.filename != '.signature.p7s'}
 
+def select_nuspec(archive, package):
+    expected = f'{package}.nuspec'
+    specs = [name for name in archive.namelist() if name.lower().endswith('.nuspec')]
+    if specs != [expected]:
+        raise ValueError(f'{package}: archive must contain one exact root nuspec')
+    return expected
+
 receipts = {}
 for package in ['FsQuint', 'FsQuint.Tooling']:
     name = package.lower()
@@ -82,7 +89,7 @@ for package in ['FsQuint', 'FsQuint.Tooling']:
         target.write_bytes(content)
         actual = payloads(target)
         with zipfile.ZipFile(target) as archive:
-            spec = next(name for name in archive.namelist() if name.endswith('.nuspec'))
+            spec = select_nuspec(archive, package)
             metadata = ET.fromstring(archive.read(spec))
             repository = next(node for node in metadata.iter() if node.tag.endswith('}repository') or node.tag == 'repository')
             if expected_commit and repository.attrib.get('commit') != expected_commit:
