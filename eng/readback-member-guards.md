@@ -12,7 +12,8 @@ Its independently authored ZIP archives showed nine red-before false greens:
 symlink payload and signature entries, plus parent, absolute, dot-segment,
 backslash, colon, empty-segment, and blank member names. F# refused each.
 The Python function now checks every entry before hashing, including a root
-signature, and refuses those cases. It still returns the same name-to-digest
+signature, and refuses those cases. A stacked draft separately rejects ASCII
+case-alias names in both readers. It still returns the same name-to-digest
 map for valid archives; a regular-file mode-only change and feed-added root
 signature remain accepted. The selected cross-feed equality contract is still
 exact member names and payload digests, with mode used only to detect symlinks.
