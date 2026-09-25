@@ -5,8 +5,9 @@ equality contract. This is the contract documented in `docs/releases.md` and
 implemented by the current Python `eng/readback.py` receiver. ZIP Unix mode is
 inspection evidence, not an equality key. A mode-only regular-file change is
 accepted by both source comparators. F# still refuses symlink archive members
-and unsafe names before comparison; those are separate candidate guards and
-are not claims of full Python receiver parity.
+and unsafe names before comparison. The stacked Python member-guard draft
+proposes matching refusals; neither source change establishes installed
+receiver parity.
 
 The red-before `eng/test-readback-mode-policy.py` extracted only the real Python
 `payloads()` function from its AST, without running its feed-fetching top level.
