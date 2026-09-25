@@ -5,9 +5,10 @@ compares locally packed `.nupkg` member names, SHA-256 payload digests, and ZIP
 Unix mode bits against an independent Python `zipfile` enumeration. It mirrors
 the local `payloads()` projection in `eng/readback.py` without importing that
 script, whose top level fetches served packages. It then mutates copies of both
-packages to prove refusals for wrong names, payload and `.nuspec` bytes, Unix
-mode, and nested signature members. A feed-added root `.signature.p7s` stays
-excluded. Repacking the same payload with different ZIP container bytes passes.
+packages to prove refusals for wrong names, payload and `.nuspec` bytes, and
+nested signature members; a mode-only difference retains payload equality. A
+feed-added root `.signature.p7s` stays excluded. Repacking the same payload
+with different ZIP container bytes passes.
 
 Run after locked restore, using only local files:
 
@@ -20,8 +21,8 @@ python3 eng/test-packed-archive-fingerprint.py /tmp/fsquint-fsc08-local-packs/Fs
 ```
 
 The local archives carry 13 and 10 payload members respectively at this
-checkpoint, all with mode `100644`. The Python readback compares names and
-payload digests; Unix mode comparison is a candidate strengthening. This
-fixture does not fetch a served package, validate feed receipts, verify a
+checkpoint, all with mode `100644`. The Python and F# cross-feed comparators
+now compare names and payload digests; F# inspection retains Unix mode facts.
+This fixture does not fetch a served package, validate feed receipts, verify a
 release commit, publish a package, or install a receiver. Real served archives
 and the live `.nuspec` commit check remain prerequisites for parity.
