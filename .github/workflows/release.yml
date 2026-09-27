@@ -79,7 +79,7 @@ jobs:
       - name: Anonymous public package example
         if: github.event_name == 'push'
         run: bash eng/public-example.sh
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: always() && (github.event_name == 'push' || inputs.readback_version != '')
         with:
           name: packages-${{ github.sha }}
