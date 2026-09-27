@@ -2,9 +2,10 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 dotnet run --project tests/FsQuint.Tests -c Release
+dotnet run --project eng/Qualification/Qualification.fsproj -c Release -- selftest
 dotnet pack src/FsQuint/FsQuint.fsproj -c Release -o artifacts/packages
 dotnet pack src/FsQuint.Tooling/FsQuint.Tooling.fsproj -c Release -o artifacts/packages
-python3 examples/AutomataReplay/check.py
+dotnet run --project eng/Qualification/Qualification.fsproj -c Release -- replay
 scratch=$(mktemp -d)
 trap 'rm -rf "$scratch"' EXIT
 cp examples/BoundedQueue/{BoundedQueue.fsproj,Program.fs,queue.itf.json} "$scratch/"

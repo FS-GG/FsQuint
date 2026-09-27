@@ -80,7 +80,7 @@ Run the committed-trace consumer from this checkout:
 
 ```sh
 dotnet pack src/FsQuint/FsQuint.fsproj -c Release -o artifacts/packages
-python3 examples/AutomataReplay/check.py
+dotnet run --project eng/Qualification/Qualification.fsproj -c Release -- replay
 ```
 
 This creates an isolated package consumer and verifies dependency provenance before

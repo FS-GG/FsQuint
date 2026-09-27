@@ -1,5 +1,7 @@
 # FSC-08 source-only archive mode policy
 
+> Historical note: the Python readback experiments described here have been superseded by the F# qualification tool in [Qualification](Qualification/README.md). This document preserves the original findings.
+
 Select exact archive member names and SHA-256 payload digests as the cross-feed
 equality contract. This is the contract documented in `docs/releases.md` and
 implemented by the current Python `eng/readback.py` receiver. ZIP Unix mode is

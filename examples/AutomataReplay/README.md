@@ -12,10 +12,10 @@ Run the package characterization:
 
 ```sh
 dotnet pack src/FsQuint/FsQuint.fsproj -c Release -o artifacts/packages
-python3 examples/AutomataReplay/check.py
+dotnet run --project eng/Qualification/Qualification.fsproj -c Release -- replay
 ```
 
-For the CI qualification, run `python3 examples/AutomataReplay/check.py`. It creates an
+For the CI qualification, run `dotnet run --project eng/Qualification/Qualification.fsproj -c Release -- replay`. It creates an
 isolated consumer and package cache, restores the lock file, verifies the package archive's
 SHA-256 and source/license metadata against the baseline, and executes the characterization.
 The candidate FsQuint package includes its source revision: only its content hash is refreshed
@@ -127,7 +127,7 @@ The guard defect diverges at step 2; swapped submission effects, wrong target an
 defects diverge at step 1. Unknown inputs, noncontiguous bindings and malformed manifests
 are rejected before initialization. Existing FsQuint tests separately qualify malformed ITF.
 
-`check.py` runs offline replay from an isolated package consumer. With `QUINT_BIN` set,
+`replay` runs offline replay from an isolated package consumer. With `QUINT_BIN` set,
 it additionally checks the pinned executable digest, typechecks the model, executes four
 witnesses and samples both safety properties (1,000 traces × 30 steps, seed 42). These
 sampled results are not exhaustive verification or a runtime/provider correctness claim.
@@ -176,7 +176,7 @@ The surface review retains an example-local helper; no new NuGet package is intr
 ## FQA-4 regeneration, coverage and failure evidence
 
 With `QUINT_BIN` and `QUINT_HOME` pointing to the provisioned baseline, run
-`python3 examples/AutomataReplay/regenerate.py`. Check mode regenerates all fixed witnesses
+`dotnet run --project eng/Qualification/Qualification.fsproj -c Release -- generate`. Check mode regenerates all fixed witnesses
 and eight 30-step approval samples in a temporary directory. It compares variables and
 state contents, ignoring only ITF metadata such as generation timestamps. `--write` creates
 new fixture files and manifests but refuses to overwrite an existing regression with changed
@@ -233,6 +233,6 @@ FQA-7 obligations, not consequences of these pure checks.
 
 See [PROTOCOL.md](PROTOCOL.md) for the model, real processor/dispatcher harness, seven
 repeatable schedules, three protocol mutations and precise qualification limits.
-`check.py` includes these schedules and model witnesses; no database is needed. The example
+`replay` includes these schedules and model witnesses; no database is needed. The example
 now qualifies this bounded controlled-runtime profile, while real-provider evidence remains
 separate. Neither the test store nor the model is a production storage implementation.

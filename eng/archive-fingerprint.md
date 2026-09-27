@@ -1,5 +1,7 @@
 # FSC-08 archive fingerprint source pilot
 
+> Historical note: the Python readback experiments described here have been superseded by the F# qualification tool in [Qualification](Qualification/README.md). This document preserves the original findings.
+
 `archive-fingerprint.fsx` is a read-only F# source primitive. It records each
 archive member's exact name, SHA-256 digest, and ZIP Unix mode bits. It refuses
 duplicate, ASCII case-alias, unsafe, or symlink member names and archives

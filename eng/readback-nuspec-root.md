@@ -1,5 +1,7 @@
 # FSC-08 source-only `.nuspec` root selection
 
+> Historical note: the Python readback experiments described here have been superseded by the F# qualification tool in [Qualification](Qualification/README.md). This document preserves the original findings.
+
 The Python release readback previously chose the first ZIP member whose name
 ended in `.nuspec`. A nested manifest, a foreign root manifest, or the first
 of two root manifests could supply the repository commit and pass readback

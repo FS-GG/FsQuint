@@ -1,5 +1,7 @@
 # FSC-08 nonempty archive payload guard
 
+> Historical note: the Python readback experiments described here have been superseded by the F# qualification tool in [Qualification](Qualification/README.md). This document preserves the original findings.
+
 The Python `payloads()` projection previously returned an empty or
 directory-only map for archives without a regular payload member. The F#
 archive inspector refused those archives. An independent offline fixture

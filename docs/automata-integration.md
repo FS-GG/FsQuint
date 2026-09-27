@@ -29,7 +29,7 @@ From the repository root, using SDK 10.0.401:
 
 ```sh
 dotnet pack src/FsQuint/FsQuint.fsproj -c Release -o artifacts/packages
-python3 examples/AutomataReplay/check.py
+dotnet run --project eng/Qualification/Qualification.fsproj -c Release -- replay
 ```
 
 This restores an isolated NuGet consumer and runs package characterization, application
@@ -59,8 +59,8 @@ Use a fresh destination for provisioning. This adds pinned Quint typechecking, w
 fixed-seed simulation, fixture regeneration and required coverage checks. Regeneration
 compares semantic states and preserves raw bytes for unchanged committed fixtures; it
 refuses a changed regression trace rather than silently replacing expected behavior.
-The [generation script](../examples/AutomataReplay/regenerate.py) exposes explicit
-`--write` for deliberately adding reviewed new fixtures.
+The [F# generator](../eng/Qualification/Generation.fs) exposes `generate --write`
+for deliberately adding reviewed new fixtures.
 
 The resolver's [bounded-check evidence](../examples/AutomataReplay/fixtures/resolver/bounded-check.json)
 records a separate completed Apalache check through two transitions. Ordinary CI does not
