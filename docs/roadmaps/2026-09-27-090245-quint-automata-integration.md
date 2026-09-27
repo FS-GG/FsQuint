@@ -14,7 +14,7 @@ Research cutoff: **2026-09-27**.
 
 Feature identity: **FQA-01**.
 
-Status: **FQA-0 package baseline implemented, awaiting delivery; Quint conformance and runtime integration are not yet qualified**.
+Status: **FQA-0 delivered; FQA-1 approval conformance implemented, awaiting delivery; runtime integration remains unqualified**.
 
 Planning owner: FsQuint maintainers. Proposed upstream work requires Automata or Quint maintainer acceptance.
 
@@ -398,19 +398,17 @@ Stages are intentionally evidence-based. Estimates are planning ranges for one e
 
 ### Execution ledger
 
-- [ ] **FQA-0 — establish contract:** implemented and locally validated; native merge readback pending.
-  The [package baseline](../../examples/AutomataReplay/baseline.json), locked independent
-  consumer and [approval profile](../../examples/AutomataReplay/README.md) pin public
-  Automata.Core 0.5.0 to source `03c3282f25888a32d36e53fa708f0342c328ccfc`.
-  The example is nonpackable and uses the upstream dependency without vendoring its source.
-  `python3 examples/AutomataReplay/check.py` passes an isolated locked restore, archive digest
-  and metadata checks, and public API characterization. `eng/check.sh` includes this check.
-  The profile records guard precedence, terminal-wrapper responsibility and the limitations
-  of structural fingerprints; it makes no claim of upstream acceptance or model conformance.
-  Delivery remains pending because this repository has no `routine-eligibility` workflow
-  or routine policy, and the shared delivery helper's provider merge operation is disabled.
-  Passing shared helper fixtures does not constitute this repository's eligibility result.
-- [ ] **FQA-1 — pure application example:** not started; depends on FQA-0 delivery.
+- [x] **FQA-0 — establish contract:** merged in [PR #30](https://github.com/FS-GG/FsQuint/pull/30),
+  commit `4dbe40d76d9401372694373582e9f1702b39aa07`; native merged-state readback confirmed.
+  [Baseline and contract](../../examples/AutomataReplay/README.md) include isolated locked restore,
+  archive/source/license provenance and public API characterization.
+- [ ] **FQA-1 — pure application example:** implemented; awaiting native merge readback.
+  Independent Quint approval model, four raw ITF witnesses, digest-bound input manifests,
+  hierarchical Automata chart and input-only domain callbacks are in
+  [AutomataReplay](../../examples/AutomataReplay/README.md).
+  The offline harness requires all positive traces to agree, detects four mutations at
+  declared steps and refuses malformed bindings before initialization. Model execution is
+  additional pinned-tool qualification, not a requirement for offline fixture replay.
 - [ ] **FQA-2 — resolver semantics suite:** not started; depends on FQA-0 delivery.
 - [ ] **FQA-3 — reusable adapter decision:** not started.
 - [ ] **FQA-4 — scenario generation and evidence:** not started.
@@ -419,10 +417,12 @@ Stages are intentionally evidence-based. Estimates are planning ranges for one e
 - [ ] **FQA-7 — real-provider qualification:** not started.
 - [ ] **FQA-8 — optional expansion decisions:** not started; consumer/ownership gates remain applicable.
 
-The unchecked FQA-0 box deliberately distinguishes validated candidate work from merged
-completion. After merge readback, carry that evidence into the next coherent milestone PR;
-do not create a status-only PR. Telemetry is not configured in this session, so no complete
-usage total is claimed.
+Delivery decision: on 2026-09-27 the user explicitly authorized continuing to completion
+and making all decisions after the unavailable routine check/helper exception was presented.
+For this roadmap, use FsQuint's existing exact-head `qualify` CI and native GitHub merge with
+head binding/readback. Do not add an unrelated governance rollout. Completion is recorded
+only after merge readback, carried into the next coherent PR. Telemetry remains unconfigured;
+no complete usage total is claimed.
 
 ### Stage definitions
 

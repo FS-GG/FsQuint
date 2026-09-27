@@ -60,3 +60,4 @@ match Rule.invoke guarded Off Unknown with
 | other -> failwithf "Guard-before-event-predicate characterization changed: %A" other
 
 printfn "PASS: Automata.Core 0.5.0 package API, paths, ordered effects, internal/unhandled outcomes, opaque closures and guard precedence."
+Conformance.check System.AppContext.BaseDirectory

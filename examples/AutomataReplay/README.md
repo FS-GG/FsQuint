@@ -1,14 +1,15 @@
 # Automata integration baseline
 
-This is the FQA-0 package qualification for the
+This contains the FQA-0 package qualification and FQA-1 offline conformance example for the
 [Quint–Automata integration roadmap](../../docs/roadmaps/2026-09-27-090245-quint-automata-integration.md).
-It exercises the public **Automata.Core 0.5.0** NuGet artifact. It does not yet replay Quint
-traces or qualify Automata's runtime or persistence providers.
+It exercises the public **Automata.Core 0.5.0** NuGet artifact. It replays independently generated Quint traces against an approval chart. It does not qualify
+Automata's runtime or persistence providers.
 
 Run the package characterization:
 
 ```sh
-dotnet restore examples/AutomataReplay/AutomataReplay.fsproj --locked-mode
+dotnet pack src/FsQuint/FsQuint.fsproj -c Release -o artifacts/packages
+dotnet restore examples/AutomataReplay/AutomataReplay.fsproj --locked-mode --source "$PWD/artifacts/packages" --source https://api.nuget.org/v3/index.json
 dotnet run --project examples/AutomataReplay/AutomataReplay.fsproj -c Release --no-restore
 ```
 
@@ -32,7 +33,7 @@ are not an independent formal model of that API.
 ## Approval profile for FQA-1
 
 Profile identity: `fsquint.automata-approval/1`. This section fixes the first example's
-contract from roadmap §5.1 and §6; executable Quint conformance is the next milestone.
+contract from roadmap §5.1 and §6, implemented by `approval.qnt` and `Approval.fs`.
 
 One document is addressed by the fixed identity `document-1`. Two distinct callers are
 `author` and `reviewer`. Inputs are synchronous, one at a time. There are no messages,
@@ -100,3 +101,30 @@ APIs and references the upstream NuGet package; no Automata implementation sourc
 are vendored into FsQuint. FsQuint's packages remain independent of this dependency. Any later
 redistribution of a combined executable or adapter package must separately retain applicable
 notices and satisfy its distribution obligations. No adapter package is distributed here.
+
+## FQA-1 evidence and limits
+
+`approval.qnt` models the contract independently as a record transition function. String
+identities are a deliberate wire-format choice: a finite input set, domain invariant and
+strict adapter decoder close their domains. `approval_test.qnt` supplies four explicit
+witnesses; their raw Quint 0.32.0 ITF output is retained in `fixtures/` alongside manifests
+binding trace/model/scenario digests, ordered inputs and source lines.
+
+`Conformance.fs` validates all manifests and observations before initializing the chart.
+The domain implementation receives only a typed input and its own previous observation.
+The replay engine compares the initial observation and every step, including refusals.
+The instrumented Quint input channel is checked against the manifest, independently of
+expected domain states. Effect records have exactly `kind` and `name`, preserving order.
+
+The positive corpus covers publication, self-approval refusal, both review reminders,
+unhandled publication, cancellation in all three active phases and post-terminal inputs.
+The guard defect diverges at step 2; swapped submission effects, wrong target and projection
+defects diverge at step 1. Unknown inputs, noncontiguous bindings and malformed manifests
+are rejected before initialization. Existing FsQuint tests separately qualify malformed ITF.
+
+`check.py` runs offline replay from an isolated package consumer. With `QUINT_BIN` set,
+it additionally checks the pinned executable digest, typechecks the model, executes four
+witnesses and samples both safety properties (1,000 traces × 30 steps, seed 42). These
+sampled results are not exhaustive verification or a runtime/provider correctness claim.
+Fixed fixture replay itself requires neither Quint nor a database. Regeneration and sampled
+input coverage are FQA-4; resolver semantics are FQA-2.

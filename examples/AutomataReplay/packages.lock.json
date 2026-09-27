@@ -13,6 +13,15 @@
         "requested": "[10.1.401, )",
         "resolved": "10.1.401",
         "contentHash": "IGqjL9U8pQl7CaCpFP3f5slZMduE8c7ZBx7HycAQ9dc1tawyniNyw7Fh6L2cShIoQDcaDL+S8/kokhWs8WwnBQ=="
+      },
+      "FsQuint": {
+        "type": "Direct",
+        "requested": "[0.1.1, 0.1.1]",
+        "resolved": "0.1.1",
+        "contentHash": "9YrFWuSkfpbZ+0GflQHE8x+gSlInc412mVvdcGWQTG7IXaKAHDTtTtl64SM3vsHXxQ1MflgD6sR0NaJ5TiM+tQ==",
+        "dependencies": {
+          "FSharp.Core": "10.1.401"
+        }
       }
     }
   }
