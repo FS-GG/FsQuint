@@ -1,6 +1,8 @@
 # FsQuint
 
 FsQuint reads Quint traces and checks F# implementations against them on .NET 10.
+It includes integration examples for [Automata](https://github.com/byzantine-systems/automata),
+an F# library for hierarchical statecharts and durable command processing.
 The packages work in any F# project targeting .NET 10; no FS-GG setup is required.
 
 [Quint](https://quint.sh/) is an open-source specification language for modeling
