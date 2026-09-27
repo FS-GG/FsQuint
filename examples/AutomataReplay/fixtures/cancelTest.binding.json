@@ -1,0 +1,27 @@
+{
+  "schema": "fsquint.approval-binding/1",
+  "profile": "fsquint.automata-approval/1",
+  "traceSha256": "5359a65ccb170887d565ff6c9ad609e17bd592000f81f010594890123941d5dd",
+  "modelSha256": "cb1e1e8094474ec2c3e5a26ac2bba1d889e758decdd556597085f10a10376230",
+  "scenarioSha256": "b110f72ab9699251a60a906d41a4f2236b13bac3bea56f6210ea73d846381d9a",
+  "steps": [
+    {
+      "index": 1,
+      "op": "publish",
+      "actor": "author",
+      "line": 15
+    },
+    {
+      "index": 2,
+      "op": "cancel",
+      "actor": "author",
+      "line": 17
+    },
+    {
+      "index": 3,
+      "op": "submit",
+      "actor": "author",
+      "line": 18
+    }
+  ]
+}
