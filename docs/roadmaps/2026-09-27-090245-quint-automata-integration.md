@@ -14,7 +14,7 @@ Research cutoff: **2026-09-27**.
 
 Feature identity: **FQA-01**.
 
-Status: **FQA-0–FQA-5 delivered; FQA-6 controlled runtime protocol implemented, awaiting delivery; real providers remain unqualified**.
+Status: **FQA-0–FQA-7 delivered; FQA-8 optional expansion decisions recorded, awaiting delivery**.
 
 Planning owner: FsQuint maintainers. Proposed upstream work requires Automata or Quint maintainer acceptance.
 
@@ -453,7 +453,8 @@ Stages are intentionally evidence-based. Estimates are planning ranges for one e
   are detected. Cleanup cancels and joins workers. Model/store assumptions, uncontrolled
   timers, progress assumptions and the decision not to add Coyote are explicit.
   This test-store qualification does not establish SQL provider semantics.
-- [ ] **FQA-7 — real-provider qualification:** implemented and locally qualified; awaiting merge readback.
+- [x] **FQA-7 — real-provider qualification:** merged in [PR #37](https://github.com/FS-GG/FsQuint/pull/37),
+  commit `5f909ce97f01aee19102575ef68c2b2aeb469baa`; merge readback confirmed.
   [Native provider harness](../../examples/AutomataProviders/README.md) runs the pinned upstream
   SQLite and PostgreSQL suites without silently skipping unsupported capabilities. Original
   public-API workers exercise SIGKILL, real-clock lease expiry, fencing and state/outbox recovery.
@@ -462,7 +463,13 @@ Stages are intentionally evidence-based. Estimates are planning ranges for one e
   keep this qualification reproducible and distinct from the independent Quint protocol model.
   Local evidence: 118 SQLite and 152 PostgreSQL tests pass with zero ignored; both crash
   witnesses pass, and all ten persisted correction rows survive restart unchanged.
-- [ ] **FQA-8 — optional expansion decisions:** not started; consumer/ownership gates remain applicable.
+  [Clean CI qualification](https://github.com/FS-GG/FsQuint/actions/runs/36313100792)
+  also passed, including pinned native builds, all provider contracts and recovery checks.
+- [ ] **FQA-8 — optional expansion decisions:** decisions recorded; awaiting merge readback.
+  [Expansion decisions](2026-09-27-quint-automata-expansion-decisions.md) select no optional
+  spike without a named consumer and accepted maintenance owner. Export, finite callback
+  exploration, shared IR and historical validation each have an explicit stop rationale
+  and reopening gate. No unrun spike is counted as tested or advertised as a capability.
 
 Delivery decision: on 2026-09-27 the user explicitly authorized continuing to completion
 and making all decisions after the unavailable routine check/helper exception was presented.
