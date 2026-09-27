@@ -2,6 +2,7 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 dotnet run --project tests/FsQuint.Tests -c Release
+python3 examples/AutomataReplay/check.py
 dotnet pack src/FsQuint/FsQuint.fsproj -c Release -o artifacts/packages
 dotnet pack src/FsQuint.Tooling/FsQuint.Tooling.fsproj -c Release -o artifacts/packages
 scratch=$(mktemp -d)
