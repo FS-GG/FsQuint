@@ -15,6 +15,7 @@ let state bindings =
     { value with Identity = QuintReplay.stateFingerprint value |> unwrap }
 
 let rec project = function
+    | ItfValue.Integer n -> Integer(string n)
     | ItfValue.Text s -> Text s
     | ItfValue.Sequence xs -> Sequence(List.map project xs)
     | ItfValue.Record xs -> Record(List.map (fun (k,v) -> k, project v) xs)

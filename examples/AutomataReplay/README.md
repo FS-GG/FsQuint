@@ -130,3 +130,34 @@ witnesses and samples both safety properties (1,000 traces × 30 steps, seed 42)
 sampled results are not exhaustive verification or a runtime/provider correctness claim.
 Fixed fixture replay itself requires neither Quint nor a database. Regeneration and sampled
 input coverage are FQA-4; resolver semantics are FQA-2.
+
+## FQA-2 resolver qualification
+
+`resolver.qnt` calculates outcomes from a fixed ancestor table and ordered rule lists,
+using deepest-owner/declaration-order priority and path suffixes. Its six-node tree and
+13 cases are a deliberately small semantic domain; they are not a general Automata verifier.
+
+| Cases | Distinction checked | Negative control |
+|---|---|---|
+| 0 | Child precedence and first declared rule | Swap matching rules |
+| 1–2 | Guard-before-predicate and rejection stop search | Remove guard / accept refusal |
+| 3–5 | Internal, leaf external self, ancestor external self | Switch transition kind / handling node |
+| 6–8 | Initial descent, classifier mismatch, ancestor re-entry | Wrong leaf / remove ancestor goto |
+| 9 | Exit-old, rule, entry-new ordered effects | Exit callback observes next payload |
+| 10–11 | Terminal leaf bubbles in pure resolver; invalid terminal rules rejected | Add application refusal / remove terminal marker |
+| 12 | Unhandled input | Add a handler |
+
+All 13 `resolver_test.qnt` witnesses agree under FsQuint replay, and every negative control
+diverges at step 1. The corpus manifest binds the raw traces and both model source files.
+Fragment checks additionally execute two independently prefixed copies, internal compound
+gotos, external gotos and a stale classifier. These are native contract checks rather than
+a claim that the bounded Quint tree models the general fragment rewriting algorithm.
+
+The committed bounded-check evidence records a completed Apalache 0.56.1 run through two
+transitions with no safety violation. Reproduce with the pinned Quint executable:
+`quint verify resolver.qnt --invariant safety --max-steps 2 --verbosity 1`.
+Provision Java and the recorded backend separately; offline replay and ordinary CI do not
+fetch a verifier. Normal CI runs the 13 witnesses plus 1,000 sampled traces of ten steps.
+A later timeout/unknown/error must be reported as incomplete, never substituted for this result.
+These consumer-owned characterizations do not assert Automata maintainers accepted a permanent
+semantic contract. Update this model before qualifying intentional semantics changes.

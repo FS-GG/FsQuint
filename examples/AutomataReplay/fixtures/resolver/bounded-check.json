@@ -1,0 +1,27 @@
+{
+  "schema": "fsquint.bounded-check/1",
+  "modelSha256": "2750fda7decfa5c92b7a24d90e02c7457f22c1b7029a5cebfff599785fd17bbd",
+  "quintVersion": "0.32.0",
+  "quintSha256": "939b64095b706017f2f202c6f99c860c40be7c31bddc2b98557316e50f42cd7f",
+  "backend": "Apalache",
+  "backendVersion": "0.56.1",
+  "backendJarSha256": "4753c0ebb2cbb266e2c6ac19ab5ca3827d726cc80fd1fc5d7c1eeb64736cd60b",
+  "command": [
+    "quint",
+    "verify",
+    "resolver.qnt",
+    "--invariant",
+    "safety",
+    "--max-steps",
+    "2",
+    "--verbosity",
+    "1"
+  ],
+  "outcome": "completed-no-violation",
+  "bound": {
+    "nodes": 6,
+    "configurations": 13,
+    "transitions": 2
+  },
+  "diagnostic": "Downloading Apalache distribution 0.56.1... done.\n[ok] No violation found (6986ms).\n"
+}

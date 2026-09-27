@@ -15,7 +15,8 @@
   <ItemGroup>
     <Compile Include="Approval.fs" />
     <Compile Include="Conformance.fs" />
+    <Compile Include="Resolver.fs" />
     <Compile Include="Program.fs" />
-    <None Include="fixtures/**;*.qnt;baseline.json;Approval.fs;Conformance.fs" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="fixtures/**;*.qnt;baseline.json;*.fs" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 </Project>
