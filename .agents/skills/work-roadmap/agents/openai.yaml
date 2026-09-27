@@ -1,0 +1,7 @@
+interface:
+  display_name: "Work Roadmap"
+  short_description: "Complete a markdown roadmap milestone by milestone"
+  default_prompt: "Use $work-roadmap to complete a markdown roadmap milestone by milestone."
+
+policy:
+  allow_implicit_invocation: false

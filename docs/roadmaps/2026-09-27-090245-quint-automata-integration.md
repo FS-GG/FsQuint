@@ -14,7 +14,7 @@ Research cutoff: **2026-09-27**.
 
 Feature identity: **FQA-01**.
 
-Status: **design and implementation roadmap; integration is not implemented or qualified**.
+Status: **FQA-0 package baseline implemented, awaiting delivery; Quint conformance and runtime integration are not yet qualified**.
 
 Planning owner: FsQuint maintainers. Proposed upstream work requires Automata or Quint maintainer acceptance.
 
@@ -394,7 +394,37 @@ These are proposed contributions, not already agreed work. No external messages 
 
 ## 12. Roadmap and acceptance gates
 
-Stages are intentionally evidence-based. Estimates are planning ranges for one engineer familiar with F# and Quint, not commitments or extrapolations from the case studies. Upstream reviews and database infrastructure can dominate calendar time. All implementation stages below are **not started** when this design is merged.
+Stages are intentionally evidence-based. Estimates are planning ranges for one engineer familiar with F# and Quint, not commitments or extrapolations from the case studies. Upstream reviews and database infrastructure can dominate calendar time. All implementation stages were **not started** when the original design was merged in [PR #29](https://github.com/FS-GG/FsQuint/pull/29).
+
+### Execution ledger
+
+- [ ] **FQA-0 — establish contract:** implemented and locally validated; native merge readback pending.
+  The [package baseline](../../examples/AutomataReplay/baseline.json), locked independent
+  consumer and [approval profile](../../examples/AutomataReplay/README.md) pin public
+  Automata.Core 0.5.0 to source `03c3282f25888a32d36e53fa708f0342c328ccfc`.
+  The example is nonpackable and uses the upstream dependency without vendoring its source.
+  `python3 examples/AutomataReplay/check.py` passes an isolated locked restore, archive digest
+  and metadata checks, and public API characterization. `eng/check.sh` includes this check.
+  The profile records guard precedence, terminal-wrapper responsibility and the limitations
+  of structural fingerprints; it makes no claim of upstream acceptance or model conformance.
+  Delivery remains pending because this repository has no `routine-eligibility` workflow
+  or routine policy, and the shared delivery helper's provider merge operation is disabled.
+  Passing shared helper fixtures does not constitute this repository's eligibility result.
+- [ ] **FQA-1 — pure application example:** not started; depends on FQA-0 delivery.
+- [ ] **FQA-2 — resolver semantics suite:** not started; depends on FQA-0 delivery.
+- [ ] **FQA-3 — reusable adapter decision:** not started.
+- [ ] **FQA-4 — scenario generation and evidence:** not started.
+- [ ] **FQA-5 — pure correction conformance:** not started.
+- [ ] **FQA-6 — controlled runtime protocol:** not started.
+- [ ] **FQA-7 — real-provider qualification:** not started.
+- [ ] **FQA-8 — optional expansion decisions:** not started; consumer/ownership gates remain applicable.
+
+The unchecked FQA-0 box deliberately distinguishes validated candidate work from merged
+completion. After merge readback, carry that evidence into the next coherent milestone PR;
+do not create a status-only PR. Telemetry is not configured in this session, so no complete
+usage total is claimed.
+
+### Stage definitions
 
 | Stage | Scope and deliverables | Dependencies and proposed owner | Exit evidence / stop condition | Indicative effort |
 |---|---|---|---|---|
