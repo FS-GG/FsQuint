@@ -14,7 +14,11 @@ Research cutoff: **2026-09-27**.
 
 Feature identity: **FQA-01**.
 
-Status: **FQA-0–FQA-7 delivered; FQA-8 optional expansion decisions recorded, awaiting delivery**.
+Status: **complete — FQA-0–FQA-7 delivered; FQA-8 closed with explicit optional-scope stop decisions**.
+
+Start with the [implemented integration guide](../automata-integration.md). Section 12 records
+confirmed merge evidence; the original research, design alternatives and effort estimates
+below remain design context rather than additional advertised capabilities.
 
 Planning owner: FsQuint maintainers. Proposed upstream work requires Automata or Quint maintainer acceptance.
 
@@ -465,7 +469,8 @@ Stages are intentionally evidence-based. Estimates are planning ranges for one e
   witnesses pass, and all ten persisted correction rows survive restart unchanged.
   [Clean CI qualification](https://github.com/FS-GG/FsQuint/actions/runs/36313100792)
   also passed, including pinned native builds, all provider contracts and recovery checks.
-- [ ] **FQA-8 — optional expansion decisions:** decisions recorded; awaiting merge readback.
+- [x] **FQA-8 — optional expansion decisions:** merged in [PR #38](https://github.com/FS-GG/FsQuint/pull/38),
+  commit `7bbaade13afc9b03ced22ca55e7646216a75c44b`; merge readback confirmed.
   [Expansion decisions](2026-09-27-quint-automata-expansion-decisions.md) select no optional
   spike without a named consumer and accepted maintenance owner. Export, finite callback
   exploration, shared IR and historical validation each have an explicit stop rationale

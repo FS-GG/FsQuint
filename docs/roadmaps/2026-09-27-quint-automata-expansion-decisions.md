@@ -1,3 +1,11 @@
+---
+title: Automata optional expansion decisions
+category: Design
+categoryindex: 4
+index: 6
+description: Consumer and ownership gates for export, finite exploration, shared IR and historical validation.
+---
+
 # Optional expansion decisions (FQA-8)
 
 Decision date: 2026-09-27. This closes the optional research gate in the
