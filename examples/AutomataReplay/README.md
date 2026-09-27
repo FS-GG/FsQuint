@@ -225,3 +225,11 @@ step 1. The model's safety properties are sampled over 1,000 traces of ten steps
 and raw/source manifests include the ten named witnesses. No model fixture is derived from
 the planner's output. Provider retention, concurrent commits and historical queries remain
 FQA-7 obligations, not consequences of these pure checks.
+
+## FQA-6 controlled runtime schedules
+
+See [PROTOCOL.md](PROTOCOL.md) for the model, real processor/dispatcher harness, seven
+repeatable schedules, three protocol mutations and precise qualification limits.
+`check.py` includes these schedules and model witnesses; no database is needed. The example
+now qualifies this bounded controlled-runtime profile, while real-provider evidence remains
+separate. Neither the test store nor the model is a production storage implementation.

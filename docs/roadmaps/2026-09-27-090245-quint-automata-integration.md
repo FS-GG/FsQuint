@@ -14,7 +14,7 @@ Research cutoff: **2026-09-27**.
 
 Feature identity: **FQA-01**.
 
-Status: **FQA-0–FQA-4 delivered; FQA-5 pure correction conformance implemented, awaiting delivery; durable runtime/providers remain unqualified**.
+Status: **FQA-0–FQA-5 delivered; FQA-6 controlled runtime protocol implemented, awaiting delivery; real providers remain unqualified**.
 
 Planning owner: FsQuint maintainers. Proposed upstream work requires Automata or Quint maintainer acceptance.
 
@@ -436,14 +436,22 @@ Stages are intentionally evidence-based. Estimates are planning ranges for one e
   A captured [seeded failure corpus](../../examples/AutomataReplay/fixtures/failure-corpus.json)
   and per-run artifacts retain expected/actual observations and reproduction metadata.
   Keep generation in consumer tooling; no public FsQuint.Tooling expansion is currently needed.
-- [ ] **FQA-5 — pure correction conformance:** implemented; awaiting merge readback.
+- [x] **FQA-5 — pure correction conformance:** merged in [PR #35](https://github.com/FS-GG/FsQuint/pull/35),
+  commit `7061f347522d8a96469ef621c3593e4510543bcb`; merge readback confirmed.
   Ten independent [correction model](../../examples/AutomataReplay/correction.qnt) witnesses
   compare version selection, equal-time ordering/compaction, beliefs and final attribution,
   budget/missing-version errors, terminal history and fail/truncate behavior against public
   `Replay.plan`. Wrong-version, tie-order, leaked-effect and policy mutations diverge at step 1.
   Runtime/Storage/Resilience 0.5.0 package identities are pinned with the original source commit.
   This stage observes pure plan output only; it makes no store atomicity or delivery claim.
-- [ ] **FQA-6 — controlled runtime protocol:** not started.
+- [ ] **FQA-6 — controlled runtime protocol:** implemented; awaiting merge readback.
+  [Controlled runtime profile](../../examples/AutomataReplay/PROTOCOL.md) uses the real
+  processor/dispatcher through public interfaces and barriers. Seven schedules run twice
+  and match independent Quint results; all finite model schedule prefixes satisfy accounting
+  and uniqueness properties. Fence, duplicate-finalize and destination-deduplication mutations
+  are detected. Cleanup cancels and joins workers. Model/store assumptions, uncontrolled
+  timers, progress assumptions and the decision not to add Coyote are explicit.
+  This test-store qualification does not establish SQL provider semantics.
 - [ ] **FQA-7 — real-provider qualification:** not started.
 - [ ] **FQA-8 — optional expansion decisions:** not started; consumer/ownership gates remain applicable.
 

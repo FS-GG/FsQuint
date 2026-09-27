@@ -1,0 +1,11 @@
+{
+  "protocol.qnt": "8290522d57eae7598ff229d24f35d1b9636e25f06f576c70e23a897f16bc659f",
+  "protocol_test.qnt": "dfd2c512c606f149e728e81981e5a7e2fc19579c29e677ce7ae1dc3808cf9b63",
+  "fixtures/protocol/case0.itf.json": "16d57cbd9360165c4d7cc560cb6ee09a5fbb8bbb371c122874fbe55d5f152ba8",
+  "fixtures/protocol/case1.itf.json": "68d961a553b8fa6e771e31d9f5439dd8713632b16fed4f7eff5aaa043696651f",
+  "fixtures/protocol/case2.itf.json": "42c7ddff21c8ec78669ef9b0a6fb93629f0e0d48f5289dd86c09356d45f64f7b",
+  "fixtures/protocol/case3.itf.json": "314cb1258af5e994e23238c9f3b95c0f740337cf5d01124c0e95d79d9dbbcf79",
+  "fixtures/protocol/case4.itf.json": "eb2a3cecec6ebd5d1723817b61f41166735e4c35ee653eca44210712e3cfe22c",
+  "fixtures/protocol/case5.itf.json": "b2f528a310c2ba5d97dc80541e93b7ff59f0391ba12a186eb198cfb97ac8cf73",
+  "fixtures/protocol/case6.itf.json": "6825ac3164df63228e40d88e7a6f166db13ef415fe4097f118754d8f10a1c9a3"
+}
