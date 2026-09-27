@@ -82,6 +82,20 @@ and tooling platform; the [roadmap](docs/roadmaps/fsquint.md) and
 [extraction decisions](docs/decisions.md) for design context; and
 [source notices](NOTICE.md) for attribution.
 
-The [Quint–Automata integration design](docs/roadmaps/2026-09-27-090245-quint-automata-integration.md)
-researches the relationships between Quint, Automata and FsQuint and proposes a
-staged integration roadmap; the integration is not yet implemented.
+## Automata integration
+
+The [integration guide](docs/automata-integration.md) shows how to check Automata F#
+charts against independent Quint models using FsQuint. Implemented examples cover
+application behavior, resolver semantics, correction planning and controlled runtime
+faults. Separate native suites qualify SQLite and PostgreSQL persistence and recovery.
+
+```sh
+dotnet pack src/FsQuint/FsQuint.fsproj -c Release -o artifacts/packages
+python3 examples/AutomataReplay/check.py
+```
+
+Committed-trace replay requires neither Quint nor a database. Model regeneration and
+native-provider checks are separate opt-in commands in the guide. The examples add no
+Automata dependency to FsQuint's public packages. See the
+[completed design and roadmap](docs/roadmaps/2026-09-27-090245-quint-automata-integration.md)
+for prior-art research, scope decisions and merged qualification evidence.

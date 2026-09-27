@@ -1,9 +1,12 @@
 # Automata integration baseline
 
-This contains the FQA-0 package qualification and FQA-1 offline conformance example for the
+This contains package qualification, independent-model conformance and controlled runtime
+schedules (FQA-0–FQA-6) for the
 [Quint–Automata integration roadmap](../../docs/roadmaps/2026-09-27-090245-quint-automata-integration.md).
-It exercises the public **Automata.Core and Automata.Runtime 0.5.0** NuGet artifacts. It replays independently generated Quint traces against an approval chart. It does not qualify
-Automata's durable processing or persistence providers.
+It exercises the public **Automata.Core and Automata.Runtime 0.5.0** NuGet artifacts against
+independently generated Quint traces. Real persistence qualification lives in
+[AutomataProviders](../AutomataProviders/README.md); the
+[integration guide](../../docs/automata-integration.md) explains how the three evidence tiers fit together.
 
 Run the package characterization:
 
