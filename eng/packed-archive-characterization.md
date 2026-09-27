@@ -1,5 +1,7 @@
 # FSC-08 packed archive characterization
 
+> Historical note: the Python readback experiments described here have been superseded by the F# qualification tool in [Qualification](Qualification/README.md). This document preserves the original findings.
+
 This source-only fixture is stacked on the F# archive fingerprint draft #15. It
 compares locally packed `.nupkg` member names, SHA-256 payload digests, and ZIP
 Unix mode bits against an independent Python `zipfile` enumeration. It mirrors
@@ -10,14 +12,10 @@ nested signature members; a mode-only difference retains payload equality. A
 feed-added root `.signature.p7s` stays excluded. Repacking the same payload
 with different ZIP container bytes passes.
 
-Run after locked restore, using only local files:
+The live offline readback controls use the F# qualification project:
 
 ```sh
-dotnet restore src/FsQuint/FsQuint.fsproj --locked-mode
-dotnet restore src/FsQuint.Tooling/FsQuint.Tooling.fsproj --locked-mode
-dotnet pack src/FsQuint/FsQuint.fsproj -c Release --no-restore -o /tmp/fsquint-fsc08-local-packs
-dotnet pack src/FsQuint.Tooling/FsQuint.Tooling.fsproj -c Release --no-restore -o /tmp/fsquint-fsc08-local-packs
-python3 eng/test-packed-archive-fingerprint.py /tmp/fsquint-fsc08-local-packs/FsQuint.0.1.0.nupkg /tmp/fsquint-fsc08-local-packs/FsQuint.Tooling.0.1.0.nupkg
+dotnet run --project eng/Qualification/Qualification.fsproj -c Release -- selftest
 ```
 
 The local archives carry 13 and 10 payload members respectively at this

@@ -1,5 +1,7 @@
 # FSC-08 source-only Python archive member guards
 
+> Historical note: the Python readback experiments described here have been superseded by the F# qualification tool in [Qualification](Qualification/README.md). This document preserves the original findings.
+
 The live Python `eng/readback.py` computes a name-to-SHA-256 payload map for
 each qualified and served archive. Before this draft, its `payloads()` function
 accepted ZIP symlink members and unsafe names. A symlinked root

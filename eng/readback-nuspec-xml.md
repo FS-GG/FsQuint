@@ -1,5 +1,7 @@
 # FSC-08 source-only `.nuspec` XML identity guard
 
+> Historical note: the Python readback experiments described here have been superseded by the F# qualification tool in [Qualification](Qualification/README.md). This document preserves the original findings.
+
 The Python release readback previously parsed the served root `.nuspec` XML,
 selected the first descendant `repository` element, and checked only its
 `commit` when a caller supplied one. It could accept a wrong package ID or

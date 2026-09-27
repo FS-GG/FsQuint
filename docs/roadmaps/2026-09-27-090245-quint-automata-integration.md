@@ -432,7 +432,7 @@ Stages are intentionally evidence-based. Estimates are planning ranges for one e
   dependency is justified by the current local-only consumer demand.
 - [x] **FQA-4 — scenario generation and evidence:** merged in [PR #34](https://github.com/FS-GG/FsQuint/pull/34),
   commit `439bfe473e5f6c96e7624584f8a2d6c08b8caf20`; merge readback confirmed.
-  [Regeneration](../../examples/AutomataReplay/regenerate.py) pins Quint/evaluator bytes,
+  [Regeneration](../../eng/Qualification/Generation.fs) pins Quint/evaluator bytes,
   reproduces fixed witnesses and eight 30-step samples, and compares semantic artifacts
   while preserving original raw bytes. Sampled manifests bind the dedicated input channel,
   seed, bounds, model digest and source location. [Coverage](../../examples/AutomataReplay/fixtures/coverage.json)

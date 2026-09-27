@@ -1,5 +1,7 @@
 # FSC-08 ASCII case-alias archive guard
 
+> Historical note: the Python readback experiments described here have been superseded by the F# qualification tool in [Qualification](Qualification/README.md). This document preserves the original findings.
+
 This draft rejects an archive containing two ZIP member names that differ only
 by ASCII letter case. Such names can refer to the same extracted path on a
 case-insensitive filesystem, even though both source readers previously saw

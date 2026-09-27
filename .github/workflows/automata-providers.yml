@@ -6,6 +6,7 @@ on:
   pull_request:
     paths:
       - 'examples/AutomataProviders/**'
+      - 'eng/Qualification/**'
       - '.github/workflows/automata-providers.yml'
       - 'global.json'
       - 'Directory.Build.props'
@@ -23,12 +24,12 @@ jobs:
       - name: Install compiler prerequisites
         run: sudo apt-get update && sudo apt-get install -y build-essential bison flex perl pkg-config
       - name: Build pinned private PostgreSQL and extensions
-        run: python3 examples/AutomataProviders/provision.py "$RUNNER_TEMP/providers"
+        run: dotnet run --project eng/Qualification/Qualification.fsproj -c Release -- providers-provision "$RUNNER_TEMP/providers"
       - name: Run all provider contracts and process-kill recovery checks
         run: >-
-          python3 examples/AutomataProviders/check.py
-          --automata-source "$RUNNER_TEMP/providers/automata"
-          --postgres-bin "$RUNNER_TEMP/providers/tools/bin"
+          dotnet run --project eng/Qualification/Qualification.fsproj -c Release --
+          providers-check "$RUNNER_TEMP/providers/automata"
+          "$RUNNER_TEMP/providers/tools/bin"
       - uses: actions/upload-artifact@v7
         if: always()
         with:

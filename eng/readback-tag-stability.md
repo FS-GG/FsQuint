@@ -1,5 +1,7 @@
 # FSC-08 source-only tag stability checks
 
+> Historical note: the Python readback experiments described here have been superseded by the F# qualification tool in [Qualification](Qualification/README.md). This document preserves the original findings.
+
 The expected commit is selected once from `refs/tags/v<version>^{commit}` in
 the preceding source draft. Before this draft, a tag could move after that
 selection while the readback continued to validate archives against the stale

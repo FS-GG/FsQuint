@@ -1,5 +1,7 @@
 # Provisional `.nuspec` identity source seam
 
+> Historical note: the Python readback experiments described here have been superseded by the F# qualification tool in [Qualification](Qualification/README.md). This document preserves the original findings.
+
 `NuspecIdentity.fsx` checks one exact root `.nuspec` member, package ID,
 version, and repository commit in a local archive. It uses the archive member
 guard from draft #15 and stacks on packed characterization draft #16. The

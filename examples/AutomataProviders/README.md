@@ -7,18 +7,17 @@ upstream implementation's own tests is an independent formal proof.
 
 ## Reproduce
 
-Linux prerequisites: the repository's .NET SDK, Python 3, Git, a C compiler, GNU Make,
+Linux prerequisites: the repository's .NET SDK, Git, a C compiler, GNU Make,
 Bison, Flex, Perl and pkg-config. Run as a non-root user. The destination must not exist:
 
 ```sh
-python3 examples/AutomataProviders/provision.py /tmp/fsquint-providers
-python3 examples/AutomataProviders/check.py \
-  --automata-source /tmp/fsquint-providers/automata \
-  --postgres-bin /tmp/fsquint-providers/tools/bin
+dotnet run --project eng/Qualification/Qualification.fsproj -c Release -- providers-provision /tmp/fsquint-providers
+dotnet run --project eng/Qualification/Qualification.fsproj -c Release -- \
+  providers-check /tmp/fsquint-providers/automata /tmp/fsquint-providers/tools/bin
 ```
 
 Provisioning builds PostgreSQL 19beta3, btree_gist, PGMQ 1.10.0 and pg_cron 1.6.8 from
-immutable commits recorded in `provision.py`. PostgreSQL 18 is insufficient for Automata's
+immutable commits recorded in [Providers.fs](../../eng/Qualification/Providers.fs). PostgreSQL 18 is insufficient for Automata's
 `UPDATE FOR PORTION OF` statements. This is a pinned beta qualification, not a recommendation
 to deploy a beta database. A stable database or dependency upgrade requires fresh qualification.
 The runner verifies the unmodified Automata source commit and the NuGet providers' repository
@@ -27,7 +26,7 @@ commit metadata; `packages.lock.json` binds their complete dependency content ha
 The runner owns a fresh PostgreSQL cluster with a private Unix socket and no TCP listener.
 Its application role has schema/queue rights; a separate administrator connection exercises
 cron installation and scheduling. No connection supplied through the caller's environment is
-used. SQLite uses temporary files. Tests and workers have process-group deadlines; cleanup
+used. SQLite uses temporary files. Tests and workers have process-tree deadlines; cleanup
 kills owned workers, stops the owned server and removes temporary resources on failure.
 There are no changes to a shared database or installed system service.
 

@@ -1,5 +1,7 @@
 # FSC-08 source-only expected commit selection
 
+> Historical note: the Python readback experiments described here have been superseded by the F# qualification tool in [Qualification](Qualification/README.md). This document preserves the original findings.
+
 The Python readback previously trusted its optional command-line expected
 commit, or `GITHUB_SHA` when no argument was supplied. A caller could provide
 the commit recorded by the wrong served package, and two feeds with matching

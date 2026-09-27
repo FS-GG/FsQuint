@@ -26,7 +26,7 @@
     "tests": 118,
     "passed": 118,
     "ignored": 0,
-    "elapsedSeconds": 17.642,
+    "elapsedSeconds": 17.521,
     "command": [
       "dotnet",
       "run",
@@ -38,10 +38,10 @@
       "--summary",
       "--sequenced"
     ],
-    "logSha256": "3b65e52f401ce1bdc91ac40368651374526bbb8517cf3c6f6c4aebcd09a85457",
+    "logSha256": "2823e22e1082fafc2537fa094a3766f9091440118fcafde60a8f6027b4d8ec33",
     "crashRecovery": {
       "boundary": "commit-first-claim-second",
-      "workerExit": -9,
+      "workerExit": 137,
       "recovered": {
         "state": 2,
         "epoch": 2,
@@ -49,14 +49,14 @@
         "newFenceToken": true
       },
       "serverImmediateRestart": false,
-      "elapsedSeconds": 1.693
+      "elapsedSeconds": 1.698
     }
   },
   "postgresql": {
     "tests": 152,
     "passed": 152,
     "ignored": 0,
-    "elapsedSeconds": 13.356,
+    "elapsedSeconds": 13.667,
     "command": [
       "dotnet",
       "run",
@@ -68,10 +68,10 @@
       "--summary",
       "--sequenced"
     ],
-    "logSha256": "acd8c057ccbe2dd4be09699ae0bc8592e356bb8b7c5bfb73a22e8795b769add5",
+    "logSha256": "a94e2c6c273d6dce644492ce4e89b3c93d8c612a9403d817a50a4f3ec671e33f",
     "crashRecovery": {
       "boundary": "commit-first-claim-second",
-      "workerExit": -9,
+      "workerExit": 137,
       "recovered": {
         "state": 2,
         "epoch": 2,
@@ -79,13 +79,13 @@
         "newFenceToken": true
       },
       "serverImmediateRestart": true,
-      "elapsedSeconds": 7.635
+      "elapsedSeconds": 7.842
     },
     "correctionRecovery": {
       "tests": 1,
       "passed": 1,
       "ignored": 0,
-      "elapsedSeconds": 1.974,
+      "elapsedSeconds": 1.957,
       "command": [
         "dotnet",
         "run",
@@ -99,21 +99,21 @@
         "--filter-test-case",
         "a correction rewrites the timeline and keeps what was believed before it"
       ],
-      "logSha256": "cdcbd48d9bdba12fea211161f9658e86631674b370614ea70a64d26498666ced",
+      "logSha256": "48d8b4b973a7f64a125e2c827daef86c05971582b5e1dcd9437845a58455f98d",
       "persistedRows": {
         "instance_state": 3,
         "instance_state_history": 3,
         "transition": 3,
         "command_correction": 1
       },
-      "rowsSha256": "331beb1fbad113566e67c8916ffdb3fdb7357b032d5ac0a869f29674a255d78b"
+      "rowsSha256": "4da0f56f13f0bb0aeb1f46553db183c9c737b0bd1347f1bfee1b78fe6327d4eb"
     }
   },
   "status": "passed",
   "harnessSha256": {
     "Program.fs": "abc39436d33c26050ad441bc47cb07a85ae88c93fe331a5d114dfe9bfbaa7c24",
-    "check.py": "6e0eed604def86083d3a46f9a8c04ffee2500b945bf28f4cdfca6d64f2c54b80",
-    "provision.py": "e949296bdc332f006c7b9efe0a7eae26c2e756abfadb0bf9346ab7ac81d972b1",
-    "packages.lock.json": "1aa7ab8affbbc8f27c85aa29f2cc30178b6326d7c20f788ce248226282c31636"
+    "packages.lock.json": "1aa7ab8affbbc8f27c85aa29f2cc30178b6326d7c20f788ce248226282c31636",
+    "Providers.fs": "8787e335e2d4a540c9fba6829b571b180c6861f2e92ec376137f6e8ab6434fb0",
+    "Common.fs": "8611591f42ce83bd86731b0b7517a5c9971a273d7944476171c4f63eb1270c62"
   }
 }
