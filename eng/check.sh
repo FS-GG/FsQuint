@@ -8,7 +8,7 @@ python3 examples/AutomataReplay/check.py
 scratch=$(mktemp -d)
 trap 'rm -rf "$scratch"' EXIT
 cp examples/BoundedQueue/{BoundedQueue.fsproj,Program.fs,queue.itf.json} "$scratch/"
-cp global.json NuGet.Config "$scratch/"
+cp global.json NuGet.Config examples/Shared/PureReplay.fs "$scratch/"
 export NUGET_PACKAGES="$scratch/packages"
 export NUGET_HTTP_CACHE_PATH="$scratch/http"
 dotnet restore "$scratch/BoundedQueue.fsproj" --source "$PWD/artifacts/packages" --source https://api.nuget.org/v3/index.json

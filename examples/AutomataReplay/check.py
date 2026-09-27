@@ -22,6 +22,7 @@ def main():
         for name in names:
             shutil.copy2(example / name, root / name)
         shutil.copytree(example / "fixtures", root / "fixtures")
+        shutil.copy2(repo / "examples/Shared/PureReplay.fs", root / "PureReplay.fs")
         for name in ("global.json", "NuGet.Config"):
             shutil.copy2(repo / name, root / name)
         env = dict(os.environ, NUGET_PACKAGES=str(root / "packages"),
@@ -67,6 +68,8 @@ def main():
         if hashlib.sha256(Path(quint).read_bytes()).hexdigest() != baseline["quintSha256"]:
             raise RuntimeError("Quint executable differs from the qualified pin")
         for args in (["typecheck", "approval.qnt"],
+                     ["typecheck", "turnstile.qnt"],
+                     ["test", "turnstile_test.qnt", "--seed", "42"],
                      ["typecheck", "resolver.qnt"],
                      ["test", "resolver_test.qnt", "--seed", "42"],
                      ["run", "resolver.qnt", "--invariant", "safety", "--seed", "42",

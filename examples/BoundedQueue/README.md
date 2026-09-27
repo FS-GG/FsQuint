@@ -8,7 +8,7 @@ dotnet run --project BoundedQueue.fsproj
 ```
 
 The project restores FsQuint from nuget.org. No Quint installation is needed to replay
-the committed trace. `Program.fs` runs a real mutable queue implementation: it never
+the committed trace. `Program.fs` runs a list-based queue implementation using the shared input-only wrapper: it never
 sets the implementation state to the next expected state. A deliberately broken LIFO
 removal diverges at step 3; an observation mutation diverges at step 1. Malformed ITF
 is refused before any implementation action.
