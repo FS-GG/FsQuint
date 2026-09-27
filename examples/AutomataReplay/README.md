@@ -2,8 +2,8 @@
 
 This contains the FQA-0 package qualification and FQA-1 offline conformance example for the
 [Quint–Automata integration roadmap](../../docs/roadmaps/2026-09-27-090245-quint-automata-integration.md).
-It exercises the public **Automata.Core 0.5.0** NuGet artifact. It replays independently generated Quint traces against an approval chart. It does not qualify
-Automata's runtime or persistence providers.
+It exercises the public **Automata.Core and Automata.Runtime 0.5.0** NuGet artifacts. It replays independently generated Quint traces against an approval chart. It does not qualify
+Automata's durable processing or persistence providers.
 
 Run the package characterization:
 
@@ -202,3 +202,26 @@ Raw traces plus their digest-bound manifests remain the offline regression corpu
 Tooling decision: retain bounded, explicit consumer scripts. A public generation/verification
 API would need supported backend contracts and external consumer demand that these examples
 do not establish. Existing library packages and replay schema 1 remain unchanged.
+
+## FQA-5 correction planning
+
+`correction.qnt` independently orders a bounded historical suffix by business instant and
+epoch, re-applies events under their recorded versions, compacts equal-time beliefs and
+attributes the final belief to the correction. `Correction.fs` calls the public pure
+`Automata.Runtime.Replay.plan` with matching typed inputs. No store or effect dispatcher is
+called. Runtime, Storage and Resilience package archive digests/source provenance are added
+to the baseline; no runtime dependency is added to FsQuint's library packages.
+
+The ten cases cover mixed versions; reversed equal-time input; fail and truncate after a
+state-dependent refusal; missing historical/current versions; replay budget; inserted-event
+refusal; an already-ended replay suffix; and an empty suffix. Observations include replayed
+epochs/versions, belief instants/amounts/attribution, original live state, hypothetical actions,
+empty committed actions and typed failure/truncation outcomes. Business seconds 2–4 and
+knowledge epoch 9 are distinct. The maximum suffix length is two; this is a bounded corpus.
+
+All ten traces agree. Mutations selecting the wrong historical version, changing tie order,
+leaking hypothetical effects into the commit and exchanging fail/truncate are detected at
+step 1. The model's safety properties are sampled over 1,000 traces of ten steps; regeneration
+and raw/source manifests include the ten named witnesses. No model fixture is derived from
+the planner's output. Provider retention, concurrent commits and historical queries remain
+FQA-7 obligations, not consequences of these pure checks.

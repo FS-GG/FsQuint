@@ -48,6 +48,11 @@ def main():
         archive = root / "packages" / package_id / version / f"{package_id}.{version}.nupkg"
         if hashlib.sha256(archive.read_bytes()).hexdigest() != baseline["packageSha256"]:
             raise RuntimeError("Restored Automata package differs from the recorded archive")
+        for pin in baseline.get("additionalPackages", []):
+            package_id, version = pin["id"].lower(), pin["version"]
+            package_path = root / "packages" / package_id / version / f"{package_id}.{version}.nupkg"
+            if hashlib.sha256(package_path.read_bytes()).hexdigest() != pin["sha256"]:
+                raise RuntimeError("Additional package provenance mismatch: " + pin["id"])
         with zipfile.ZipFile(archive) as package:
             nuspec = next(name for name in package.namelist() if name.endswith(".nuspec"))
             metadata = ET.fromstring(package.read(nuspec)).find("{*}metadata")
@@ -80,6 +85,8 @@ def main():
         subprocess.run(["python3", "regenerate.py"], cwd=example, check=True, timeout=180)
         for args in (["typecheck", "approval.qnt"],
                      ["typecheck", "turnstile.qnt"],
+                     ["run", "correction.qnt", "--invariant", "safety", "--seed", "42",
+                      "--max-samples", "1000", "--max-steps", "10", "--verbosity", "1"],
                      ["test", "turnstile_test.qnt", "--seed", "42"],
                      ["typecheck", "resolver.qnt"],
                      ["test", "resolver_test.qnt", "--seed", "42"],

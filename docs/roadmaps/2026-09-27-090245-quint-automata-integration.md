@@ -14,7 +14,7 @@ Research cutoff: **2026-09-27**.
 
 Feature identity: **FQA-01**.
 
-Status: **FQA-0–FQA-3 delivered; FQA-4 scenario evidence implemented, awaiting delivery; runtime integration remains unqualified**.
+Status: **FQA-0–FQA-4 delivered; FQA-5 pure correction conformance implemented, awaiting delivery; durable runtime/providers remain unqualified**.
 
 Planning owner: FsQuint maintainers. Proposed upstream work requires Automata or Quint maintainer acceptance.
 
@@ -426,7 +426,8 @@ Stages are intentionally evidence-based. Estimates are planning ranges for one e
   controls remain; operation identity mismatch fails before initialization. Isolated package
   consumers cover both projects. Retain example source; no adapter package or new core
   dependency is justified by the current local-only consumer demand.
-- [ ] **FQA-4 — scenario generation and evidence:** implemented; awaiting merge readback.
+- [x] **FQA-4 — scenario generation and evidence:** merged in [PR #34](https://github.com/FS-GG/FsQuint/pull/34),
+  commit `439bfe473e5f6c96e7624584f8a2d6c08b8caf20`; merge readback confirmed.
   [Regeneration](../../examples/AutomataReplay/regenerate.py) pins Quint/evaluator bytes,
   reproduces fixed witnesses and eight 30-step samples, and compares semantic artifacts
   while preserving original raw bytes. Sampled manifests bind the dedicated input channel,
@@ -435,7 +436,13 @@ Stages are intentionally evidence-based. Estimates are planning ranges for one e
   A captured [seeded failure corpus](../../examples/AutomataReplay/fixtures/failure-corpus.json)
   and per-run artifacts retain expected/actual observations and reproduction metadata.
   Keep generation in consumer tooling; no public FsQuint.Tooling expansion is currently needed.
-- [ ] **FQA-5 — pure correction conformance:** not started.
+- [ ] **FQA-5 — pure correction conformance:** implemented; awaiting merge readback.
+  Ten independent [correction model](../../examples/AutomataReplay/correction.qnt) witnesses
+  compare version selection, equal-time ordering/compaction, beliefs and final attribution,
+  budget/missing-version errors, terminal history and fail/truncate behavior against public
+  `Replay.plan`. Wrong-version, tie-order, leaked-effect and policy mutations diverge at step 1.
+  Runtime/Storage/Resilience 0.5.0 package identities are pinned with the original source commit.
+  This stage observes pure plan output only; it makes no store atomicity or delivery claim.
 - [ ] **FQA-6 — controlled runtime protocol:** not started.
 - [ ] **FQA-7 — real-provider qualification:** not started.
 - [ ] **FQA-8 — optional expansion decisions:** not started; consumer/ownership gates remain applicable.

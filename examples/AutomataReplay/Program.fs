@@ -63,3 +63,4 @@ printfn "PASS: Automata.Core 0.5.0 package API, paths, ordered effects, internal
 Conformance.check System.AppContext.BaseDirectory
 Resolver.check System.AppContext.BaseDirectory
 Turnstile.check System.AppContext.BaseDirectory
+Correction.check System.AppContext.BaseDirectory
