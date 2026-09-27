@@ -78,73 +78,29 @@ let trace =
         TraceIdentity = QuintReplay.traceFingerprint draft |> unwrap
     }
 
-type QueueRuntime =
-    {
-        Items: Collections.Generic.List<int>
-        Inserted: Collections.Generic.List<int>
-        Removed: Collections.Generic.List<int>
-    }
-
-let driver broken mutate =
-    {
-        Initialize =
-            fun _ _ ->
-                Task.FromResult(
-                    Ok
-                        {
-                            Items = new Collections.Generic.List<int>()
-                            Inserted = new Collections.Generic.List<int>()
-                            Removed = new Collections.Generic.List<int>()
-                        }
-                )
-        Apply =
-            fun step runtime _ ->
-                task {
-                    match step.Action with
-                    | "enqueue:1"
-                    | "enqueue:2" ->
-                        if runtime.Items.Count = 2 then
-                            return Error "Queue full"
-                        else
-                            let value = int (step.Action.Split(':')[1])
-                            runtime.Items.Add(value)
-                            runtime.Inserted.Add(value)
-                            return Ok()
-                    | "dequeue" ->
-                        if runtime.Items.Count = 0 then
-                            return Error "Queue empty"
-                        else
-                            let index = if broken then runtime.Items.Count - 1 else 0
-                            runtime.Removed.Add(runtime.Items[index])
-                            runtime.Items.RemoveAt(index)
-                            return Ok()
-                    | action -> return Error("Unknown action: " + action)
-                }
-        Observe =
-            fun runtime _ ->
-                let values xs =
-                    xs |> Seq.map (string >> Integer) |> Seq.toList |> Sequence
-
-                let items = if mutate then Sequence [] else values runtime.Items
-
-                state
-                    [
-                        "state",
-                        Record
-                            [
-                                "items", items
-                                "inserted", values runtime.Inserted
-                                "removed", values runtime.Removed
-                            ]
-                    ]
-                |> Ok
-                |> Task.FromResult
-        Cleanup = fun _ _ -> Task.FromResult(Ok())
-    }
+type QueueRuntime = { Items: int list; Inserted: int list; Removed: int list }
+type QueueInput = Enqueue of int | Dequeue
 
 let run broken mutate =
-    Replay.run (TimeSpan.FromSeconds(5.0)) CancellationToken.None (driver broken mutate) trace
-    |> fun t -> t.GetAwaiter().GetResult()
+    let bindings : PureReplay.BoundInput<QueueInput> list = actions |> List.mapi(fun i action ->
+        let input = match action with
+                    | "enqueue:1" -> Enqueue 1 | "enqueue:2" -> Enqueue 2 | "dequeue" -> Dequeue
+                    | other -> failwith ("Unknown queue input: " + other)
+        {Index=i+1;OperationId=action;Input=input})
+    let reduce current input =
+        match input, current.Items with
+        | Enqueue _, xs when xs.Length = 2 -> Error "Queue full"
+        | Enqueue value, xs -> Ok {current with Items=xs@[value];Inserted=current.Inserted@[value]}
+        | Dequeue, [] -> Error "Queue empty"
+        | Dequeue, xs ->
+            let value, rest = if broken then List.last xs, List.take (xs.Length-1) xs else xs.Head,xs.Tail
+            Ok {current with Items=rest;Removed=current.Removed@[value]}
+    let observe current =
+        let values xs = xs |> List.map(string >> Integer) |> Sequence
+        state ["state", Record ["items", (if mutate then Sequence [] else values current.Items)
+                                "inserted", values current.Inserted; "removed", values current.Removed]] |> Ok
+    PureReplay.run (fun () -> Ok {Items=[];Inserted=[];Removed=[]}) reduce observe
+        (fun _ -> Ok()) bindings trace
 
 let good = run false false
 

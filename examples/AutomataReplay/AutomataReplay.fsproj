@@ -7,6 +7,11 @@
     <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="../Shared/PureReplay.fs" Link="PureReplay.fs" Condition="!Exists('PureReplay.fs')" />
+    <Compile Include="PureReplay.fs" Condition="Exists('PureReplay.fs')" />
+    <None Include="../Shared/PureReplay.fs" Link="PureReplay.fs" CopyToOutputDirectory="PreserveNewest" Condition="!Exists('PureReplay.fs')" />
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Remove="FSharp.Core" />
     <PackageReference Include="FSharp.Core" Version="10.1.401" />
     <PackageReference Include="ByzantineSystems.Automata.Core" Version="[0.5.0]" />
@@ -16,6 +21,7 @@
     <Compile Include="Approval.fs" />
     <Compile Include="Conformance.fs" />
     <Compile Include="Resolver.fs" />
+    <Compile Include="Turnstile.fs" />
     <Compile Include="Program.fs" />
     <None Include="fixtures/**;*.qnt;baseline.json;*.fs" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>

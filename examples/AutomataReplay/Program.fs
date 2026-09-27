@@ -62,3 +62,4 @@ match Rule.invoke guarded Off Unknown with
 printfn "PASS: Automata.Core 0.5.0 package API, paths, ordered effects, internal/unhandled outcomes, opaque closures and guard precedence."
 Conformance.check System.AppContext.BaseDirectory
 Resolver.check System.AppContext.BaseDirectory
+Turnstile.check System.AppContext.BaseDirectory

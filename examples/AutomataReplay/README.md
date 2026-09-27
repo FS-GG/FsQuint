@@ -161,3 +161,11 @@ fetch a verifier. Normal CI runs the 13 witnesses plus 1,000 sampled traces of t
 A later timeout/unknown/error must be reported as incomplete, never substituted for this result.
 These consumer-owned characterizations do not assert Automata maintainers accepted a permanent
 semantic contract. Update this model before qualifying intentional semantics changes.
+
+## FQA-3 second domain and helper
+
+`turnstile.qnt` and its witness independently describe coin/push behavior. `Turnstile.fs`
+replays the trace against a second Automata chart and detects a wrong alarm effect at step 1.
+Approval, turnstile and the bounded queue all use [PureReplay](../Shared/README.md), which
+validates input identities before construction and passes no expected state to callbacks.
+The surface review retains an example-local helper; no new NuGet package is introduced.

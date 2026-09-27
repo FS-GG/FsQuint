@@ -14,7 +14,7 @@ Research cutoff: **2026-09-27**.
 
 Feature identity: **FQA-01**.
 
-Status: **FQA-0/FQA-1 delivered; FQA-2 resolver conformance implemented, awaiting delivery; runtime integration remains unqualified**.
+Status: **FQA-0–FQA-2 delivered; FQA-3 adapter reuse decision implemented, awaiting delivery; runtime integration remains unqualified**.
 
 Planning owner: FsQuint maintainers. Proposed upstream work requires Automata or Quint maintainer acceptance.
 
@@ -410,7 +410,8 @@ Stages are intentionally evidence-based. Estimates are planning ranges for one e
   The offline harness requires all positive traces to agree, detects four mutations at
   declared steps and refuses malformed bindings before initialization. Model execution is
   additional pinned-tool qualification, not a requirement for offline fixture replay.
-- [ ] **FQA-2 — resolver semantics suite:** implemented; awaiting merge readback.
+- [x] **FQA-2 — resolver semantics suite:** merged in [PR #32](https://github.com/FS-GG/FsQuint/pull/32),
+  commit `6bbb8a7206050f03ac9515b8f2d0d20fb30fbc6d`; merge readback confirmed.
   Thirteen independent Quint witnesses replay against public Automata APIs; every witness
   rejects a semantic mutation at step 1. Fragment contract tests cover two prefixed copies,
   retained external targets and stale classifier refusal. Apalache 0.56.1 completed safety
@@ -418,7 +419,12 @@ Stages are intentionally evidence-based. Estimates are planning ranges for one e
   [Evidence and bounds](../../examples/AutomataReplay/fixtures/resolver/bounded-check.json)
   retain model/tool/backend digests and the exact command. General chart semantics and
   runtime lifecycle remain outside this bounded result.
-- [ ] **FQA-3 — reusable adapter decision:** not started.
+- [ ] **FQA-3 — reusable adapter decision:** implemented; awaiting merge readback.
+  [Shared helper and surface decision](../../examples/Shared/README.md): approval, turnstile
+  and queue use one input-only mechanism with no domain branches. Positive and mutation
+  controls remain; operation identity mismatch fails before initialization. Isolated package
+  consumers cover both projects. Retain example source; no adapter package or new core
+  dependency is justified by the current local-only consumer demand.
 - [ ] **FQA-4 — scenario generation and evidence:** not started.
 - [ ] **FQA-5 — pure correction conformance:** not started.
 - [ ] **FQA-6 — controlled runtime protocol:** not started.

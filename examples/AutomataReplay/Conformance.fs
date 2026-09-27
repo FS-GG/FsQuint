@@ -110,16 +110,13 @@ let load root name (manifestBytes: byte[]) =
                     { Index = i+1; Action = action; Source = source; Expected = s }) }
     inputs, { draft with TraceIdentity = QuintReplay.traceFingerprint draft |> unwrap }
 
-let run mutation (inputs: Input list) trace onInit =
+let run mutation (inputs: Input list) (trace: QuintReplayTrace) onInit =
     let chart = chart mutation
-    let driver = {
-        Initialize = fun _ _ -> onInit(); Task.FromResult(Ok(ref initialObservation))
-        Apply = fun step (current: Observation ref) _ ->
-            current.Value <- apply chart current.Value inputs[step.Index-1]
-            Task.FromResult(Ok())
-        Observe = fun current _ -> Task.FromResult(Ok(observe mutation current.Value))
-        Cleanup = fun _ _ -> Task.FromResult(Ok()) }
-    Replay.run (TimeSpan.FromSeconds 5.0) CancellationToken.None driver trace |> fun t -> t.GetAwaiter().GetResult()
+    let bindings : PureReplay.BoundInput<Input> list = List.zip inputs trace.Steps |> List.map(fun (input,step) ->
+        {Index=step.Index;OperationId=step.Action;Input=input})
+    PureReplay.run (fun () -> onInit(); Ok initialObservation)
+        (fun current input -> Ok(apply chart current input))
+        (observe mutation >> Ok) (fun _ -> Ok()) bindings trace
 
 let check root =
     for name in ["approvalTest";"cancelTest";"pendingCancelTest";"approvedCancelTest"] do
