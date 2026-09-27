@@ -14,7 +14,7 @@ Research cutoff: **2026-09-27**.
 
 Feature identity: **FQA-01**.
 
-Status: **FQA-0–FQA-2 delivered; FQA-3 adapter reuse decision implemented, awaiting delivery; runtime integration remains unqualified**.
+Status: **FQA-0–FQA-3 delivered; FQA-4 scenario evidence implemented, awaiting delivery; runtime integration remains unqualified**.
 
 Planning owner: FsQuint maintainers. Proposed upstream work requires Automata or Quint maintainer acceptance.
 
@@ -419,13 +419,22 @@ Stages are intentionally evidence-based. Estimates are planning ranges for one e
   [Evidence and bounds](../../examples/AutomataReplay/fixtures/resolver/bounded-check.json)
   retain model/tool/backend digests and the exact command. General chart semantics and
   runtime lifecycle remain outside this bounded result.
-- [ ] **FQA-3 — reusable adapter decision:** implemented; awaiting merge readback.
+- [x] **FQA-3 — reusable adapter decision:** merged in [PR #33](https://github.com/FS-GG/FsQuint/pull/33),
+  commit `c415dff7f044305e5344bf357529468a58c25f0a`; merge readback confirmed.
   [Shared helper and surface decision](../../examples/Shared/README.md): approval, turnstile
   and queue use one input-only mechanism with no domain branches. Positive and mutation
   controls remain; operation identity mismatch fails before initialization. Isolated package
   consumers cover both projects. Retain example source; no adapter package or new core
   dependency is justified by the current local-only consumer demand.
-- [ ] **FQA-4 — scenario generation and evidence:** not started.
+- [ ] **FQA-4 — scenario generation and evidence:** implemented; awaiting merge readback.
+  [Regeneration](../../examples/AutomataReplay/regenerate.py) pins Quint/evaluator bytes,
+  reproduces fixed witnesses and eight 30-step samples, and compares semantic artifacts
+  while preserving original raw bytes. Sampled manifests bind the dedicated input channel,
+  seed, bounds, model digest and source location. [Coverage](../../examples/AutomataReplay/fixtures/coverage.json)
+  records required input/phase/outcome/action-order and resolver path/rule-marker bins.
+  A captured [seeded failure corpus](../../examples/AutomataReplay/fixtures/failure-corpus.json)
+  and per-run artifacts retain expected/actual observations and reproduction metadata.
+  Keep generation in consumer tooling; no public FsQuint.Tooling expansion is currently needed.
 - [ ] **FQA-5 — pure correction conformance:** not started.
 - [ ] **FQA-6 — controlled runtime protocol:** not started.
 - [ ] **FQA-7 — real-provider qualification:** not started.

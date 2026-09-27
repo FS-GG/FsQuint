@@ -169,3 +169,36 @@ replays the trace against a second Automata chart and detects a wrong alarm effe
 Approval, turnstile and the bounded queue all use [PureReplay](../Shared/README.md), which
 validates input identities before construction and passes no expected state to callbacks.
 The surface review retains an example-local helper; no new NuGet package is introduced.
+
+## FQA-4 regeneration, coverage and failure evidence
+
+With `QUINT_BIN` and `QUINT_HOME` pointing to the provisioned baseline, run
+`python3 examples/AutomataReplay/regenerate.py`. Check mode regenerates all fixed witnesses
+and eight 30-step approval samples in a temporary directory. It compares variables and
+state contents, ignoring only ITF metadata such as generation timestamps. `--write` creates
+new fixture files and manifests but refuses to overwrite an existing regression with changed
+semantics. Equivalent raw fixtures retain their original bytes. Intentional semantics changes
+need a new profile/versioned fixture, not an overwrite to make qualification green.
+
+The new sampled binding format `fsquint.approval-binding/2` adds source file, seed and step
+bound; fixed witnesses retain format 1 and their original raw ITF. Sample inputs come only
+from the model's separate `input` field, never differences in expected states. There are no
+additional nondeterministic choices in this profile. Unknown input forms, changed source or
+trace digests, missing output, timeout and nonzero execution all fail qualification.
+
+`fixtures/coverage.json` includes phase, input, result, ordered effects, resolver handlers,
+paths and abstract rule markers. Markers are model/corpus labels, not stable upstream rule IDs.
+Required bins must be present; eight random traces alone are not a coverage claim. The explicit
+witnesses ensure the authorization and publication boundaries occur even when samples quickly
+terminate. Two successive checks reproduce equivalent artifacts under the pinned tools.
+
+`fixtures/failure-corpus.json` captures the four FQA-1 seeded failures with source identities,
+input/source/index, expected and actual observations, trace identity and reproduction command.
+It is historical evidence, not a golden output to rewrite on each adapter edit. Current runs
+produce `artifacts/automata-replay.json`; regeneration produces `artifacts/automata-generation.json`
+with source/raw/binding digests, exact commands and coverage. CI logs the mutation diagnostics.
+Raw traces plus their digest-bound manifests remain the offline regression corpus.
+
+Tooling decision: retain bounded, explicit consumer scripts. A public generation/verification
+API would need supported backend contracts and external consumer demand that these examples
+do not establish. Existing library packages and replay schema 1 remain unchanged.

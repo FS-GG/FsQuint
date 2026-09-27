@@ -60,13 +60,24 @@ def main():
             if (source.get("url") != baseline["repository"] or
                     source.get("commit") != baseline["repositoryCommit"]):
                 raise RuntimeError("Unexpected package source provenance")
-        subprocess.run(["dotnet", "run", "--project", "AutomataReplay.fsproj",
-                        "-c", "Release", "--no-restore"], cwd=root, env=env, check=True)
+        execution = subprocess.run(["dotnet", "run", "--project", "AutomataReplay.fsproj",
+                                   "-c", "Release", "--no-restore"], cwd=root, env=env,
+                                   check=True, capture_output=True, text=True, timeout=120)
+        print(execution.stdout, end="")
+        failures = [json.loads(line.removeprefix("DIVERGENCE ")) for line in execution.stdout.splitlines()
+                    if line.startswith("DIVERGENCE ")]
+        if len(failures) != 4:
+            raise RuntimeError("Missing approval mutation diagnostics")
+        artifact = repo / "artifacts/automata-replay.json"
+        artifact.parent.mkdir(exist_ok=True)
+        artifact.write_text(json.dumps({"schema": "fsquint.replay-evidence/1", "outcome": "passed",
+                                        "mutationDiagnostics": failures}, indent=2) + "\n")
     print("PASS: isolated locked restore and package archive/source/license provenance.")
     quint = os.environ.get("QUINT_BIN")
     if quint:
         if hashlib.sha256(Path(quint).read_bytes()).hexdigest() != baseline["quintSha256"]:
             raise RuntimeError("Quint executable differs from the qualified pin")
+        subprocess.run(["python3", "regenerate.py"], cwd=example, check=True, timeout=180)
         for args in (["typecheck", "approval.qnt"],
                      ["typecheck", "turnstile.qnt"],
                      ["test", "turnstile_test.qnt", "--seed", "42"],

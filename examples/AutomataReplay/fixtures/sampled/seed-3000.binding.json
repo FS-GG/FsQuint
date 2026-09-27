@@ -1,0 +1,192 @@
+{
+  "schema": "fsquint.approval-binding/2",
+  "profile": "fsquint.automata-approval/1",
+  "traceSha256": "802f3a5169774f403a6dcf2f7042d02feea118faf8a53a09f92ecd55d2fffd33",
+  "modelSha256": "cb1e1e8094474ec2c3e5a26ac2bba1d889e758decdd556597085f10a10376230",
+  "scenarioSha256": "cb1e1e8094474ec2c3e5a26ac2bba1d889e758decdd556597085f10a10376230",
+  "steps": [
+    {
+      "index": 1,
+      "op": "publish",
+      "actor": "author",
+      "line": 35
+    },
+    {
+      "index": 2,
+      "op": "cancel",
+      "actor": "author",
+      "line": 35
+    },
+    {
+      "index": 3,
+      "op": "approve",
+      "actor": "author",
+      "line": 35
+    },
+    {
+      "index": 4,
+      "op": "approve",
+      "actor": "author",
+      "line": 35
+    },
+    {
+      "index": 5,
+      "op": "approve",
+      "actor": "reviewer",
+      "line": 35
+    },
+    {
+      "index": 6,
+      "op": "approve",
+      "actor": "author",
+      "line": 35
+    },
+    {
+      "index": 7,
+      "op": "approve",
+      "actor": "reviewer",
+      "line": 35
+    },
+    {
+      "index": 8,
+      "op": "publish",
+      "actor": "author",
+      "line": 35
+    },
+    {
+      "index": 9,
+      "op": "approve",
+      "actor": "reviewer",
+      "line": 35
+    },
+    {
+      "index": 10,
+      "op": "remind",
+      "actor": "author",
+      "line": 35
+    },
+    {
+      "index": 11,
+      "op": "approve",
+      "actor": "reviewer",
+      "line": 35
+    },
+    {
+      "index": 12,
+      "op": "publish",
+      "actor": "author",
+      "line": 35
+    },
+    {
+      "index": 13,
+      "op": "publish",
+      "actor": "author",
+      "line": 35
+    },
+    {
+      "index": 14,
+      "op": "submit",
+      "actor": "author",
+      "line": 35
+    },
+    {
+      "index": 15,
+      "op": "submit",
+      "actor": "author",
+      "line": 35
+    },
+    {
+      "index": 16,
+      "op": "approve",
+      "actor": "reviewer",
+      "line": 35
+    },
+    {
+      "index": 17,
+      "op": "approve",
+      "actor": "reviewer",
+      "line": 35
+    },
+    {
+      "index": 18,
+      "op": "publish",
+      "actor": "author",
+      "line": 35
+    },
+    {
+      "index": 19,
+      "op": "approve",
+      "actor": "author",
+      "line": 35
+    },
+    {
+      "index": 20,
+      "op": "publish",
+      "actor": "author",
+      "line": 35
+    },
+    {
+      "index": 21,
+      "op": "submit",
+      "actor": "author",
+      "line": 35
+    },
+    {
+      "index": 22,
+      "op": "cancel",
+      "actor": "author",
+      "line": 35
+    },
+    {
+      "index": 23,
+      "op": "approve",
+      "actor": "author",
+      "line": 35
+    },
+    {
+      "index": 24,
+      "op": "cancel",
+      "actor": "author",
+      "line": 35
+    },
+    {
+      "index": 25,
+      "op": "publish",
+      "actor": "author",
+      "line": 35
+    },
+    {
+      "index": 26,
+      "op": "publish",
+      "actor": "author",
+      "line": 35
+    },
+    {
+      "index": 27,
+      "op": "approve",
+      "actor": "reviewer",
+      "line": 35
+    },
+    {
+      "index": 28,
+      "op": "publish",
+      "actor": "author",
+      "line": 35
+    },
+    {
+      "index": 29,
+      "op": "publish",
+      "actor": "author",
+      "line": 35
+    },
+    {
+      "index": 30,
+      "op": "publish",
+      "actor": "author",
+      "line": 35
+    }
+  ],
+  "sourceFile": "approval.qnt",
+  "seed": "3000",
+  "maxSteps": 30
+}
