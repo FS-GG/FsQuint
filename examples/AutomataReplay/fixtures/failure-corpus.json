@@ -1,0 +1,77 @@
+{
+  "schema": "fsquint.seeded-failure-corpus/1",
+  "outcome": "passed",
+  "mutationDiagnostics": [
+    {
+      "actual": "{\"state\":{\"actions\":[{\"kind\":\"audit\",\"name\":\"approved\"}],\"approvedBy\":\"Reviewer\",\"outcome\":\"Applied\",\"phase\":\"Approved\"}}",
+      "expected": "{\"state\":{\"actions\":[],\"approvedBy\":\"None\",\"outcome\":\"NotAuthorized\",\"phase\":\"Pending\"}}",
+      "input": "approve:author",
+      "modelDigest": "cb1e1e8094474ec2c3e5a26ac2bba1d889e758decdd556597085f10a10376230",
+      "mutation": "Guard",
+      "path": "$/bindings/state",
+      "reproduce": "dotnet run --project examples/AutomataReplay/AutomataReplay.fsproj -c Release --no-restore",
+      "source": {
+        "Path": "approval_test.qnt",
+        "Line": 5,
+        "Column": 1
+      },
+      "step": 2,
+      "traceIdentity": "ebc7d175589575b44b9cdddb8c6c93507b46b0298a2faf83c670ae166384a04f"
+    },
+    {
+      "actual": "{\"state\":{\"actions\":[{\"kind\":\"notify\",\"name\":\"review\"},{\"kind\":\"audit\",\"name\":\"submitted\"}],\"approvedBy\":\"None\",\"outcome\":\"Applied\",\"phase\":\"Pending\"}}",
+      "expected": "{\"state\":{\"actions\":[{\"kind\":\"audit\",\"name\":\"submitted\"},{\"kind\":\"notify\",\"name\":\"review\"}],\"approvedBy\":\"None\",\"outcome\":\"Applied\",\"phase\":\"Pending\"}}",
+      "input": "submit:author",
+      "modelDigest": "cb1e1e8094474ec2c3e5a26ac2bba1d889e758decdd556597085f10a10376230",
+      "mutation": "ActionOrder",
+      "path": "$/bindings/state",
+      "reproduce": "dotnet run --project examples/AutomataReplay/AutomataReplay.fsproj -c Release --no-restore",
+      "source": {
+        "Path": "approval_test.qnt",
+        "Line": 4,
+        "Column": 1
+      },
+      "step": 1,
+      "traceIdentity": "ebc7d175589575b44b9cdddb8c6c93507b46b0298a2faf83c670ae166384a04f"
+    },
+    {
+      "actual": "{\"state\":{\"actions\":[{\"kind\":\"audit\",\"name\":\"submitted\"},{\"kind\":\"notify\",\"name\":\"review\"}],\"approvedBy\":\"None\",\"outcome\":\"Applied\",\"phase\":\"Approved\"}}",
+      "expected": "{\"state\":{\"actions\":[{\"kind\":\"audit\",\"name\":\"submitted\"},{\"kind\":\"notify\",\"name\":\"review\"}],\"approvedBy\":\"None\",\"outcome\":\"Applied\",\"phase\":\"Pending\"}}",
+      "input": "submit:author",
+      "modelDigest": "cb1e1e8094474ec2c3e5a26ac2bba1d889e758decdd556597085f10a10376230",
+      "mutation": "WrongTarget",
+      "path": "$/bindings/state",
+      "reproduce": "dotnet run --project examples/AutomataReplay/AutomataReplay.fsproj -c Release --no-restore",
+      "source": {
+        "Path": "approval_test.qnt",
+        "Line": 4,
+        "Column": 1
+      },
+      "step": 1,
+      "traceIdentity": "ebc7d175589575b44b9cdddb8c6c93507b46b0298a2faf83c670ae166384a04f"
+    },
+    {
+      "actual": "{\"state\":{\"actions\":[{\"kind\":\"audit\",\"name\":\"submitted\"},{\"kind\":\"notify\",\"name\":\"review\"}],\"approvedBy\":\"None\",\"outcome\":\"Applied\",\"phase\":\"Draft\"}}",
+      "expected": "{\"state\":{\"actions\":[{\"kind\":\"audit\",\"name\":\"submitted\"},{\"kind\":\"notify\",\"name\":\"review\"}],\"approvedBy\":\"None\",\"outcome\":\"Applied\",\"phase\":\"Pending\"}}",
+      "input": "submit:author",
+      "modelDigest": "cb1e1e8094474ec2c3e5a26ac2bba1d889e758decdd556597085f10a10376230",
+      "mutation": "Projection",
+      "path": "$/bindings/state",
+      "reproduce": "dotnet run --project examples/AutomataReplay/AutomataReplay.fsproj -c Release --no-restore",
+      "source": {
+        "Path": "approval_test.qnt",
+        "Line": 4,
+        "Column": 1
+      },
+      "step": 1,
+      "traceIdentity": "ebc7d175589575b44b9cdddb8c6c93507b46b0298a2faf83c670ae166384a04f"
+    }
+  ],
+  "captureStage": "FQA-4",
+  "rawTraceSha256": "96127c0c4212a417304a39f408bc640331ef541abcdeda994c1234c8016883c5",
+  "sourceDigests": {
+    "Approval.fs": "b6ef4bdd3fad96b28a652ac8fb8cf78bbc312e04e5fbc326baff26bcc44ffbdd",
+    "Conformance.fs": "15c8860ffbbee24f055af32ae9d080f5d296ab69c7c07649f85ee85c38fdabb1",
+    "approval.qnt": "cb1e1e8094474ec2c3e5a26ac2bba1d889e758decdd556597085f10a10376230"
+  }
+}

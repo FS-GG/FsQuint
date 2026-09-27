@@ -13,5 +13,6 @@
   "quintSha256": "939b64095b706017f2f202c6f99c860c40be7c31bddc2b98557316e50f42cd7f",
   "evaluatorVersion": "0.6.0",
   "semanticProfile": "fsquint.automata-approval/1",
-  "implementationStatus": "package-characterization-only"
+  "implementationStatus": "pure-conformance-qualified",
+  "evaluatorSha256": "b2efdeac5713d153e41bf2143b94ed75d888fdd5637f4a5d61a04c695313510a"
 }

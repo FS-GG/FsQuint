@@ -71,11 +71,15 @@ let validateObservation value =
 let load root name (manifestBytes: byte[]) =
     use json = JsonDocument.Parse manifestBytes
     let m = json.RootElement
-    fields ["schema";"profile";"traceSha256";"modelSha256";"scenarioSha256";"steps"] m
-    if str "schema" m <> "fsquint.approval-binding/1" || str "profile" m <> "fsquint.automata-approval/1" then failwith "Unknown binding profile"
+    let sampled = str "schema" m = "fsquint.approval-binding/2"
+    fields (["schema";"profile";"traceSha256";"modelSha256";"scenarioSha256";"steps"] @
+            (if sampled then ["sourceFile";"seed";"maxSteps"] else [])) m
+    if (not sampled && str "schema" m <> "fsquint.approval-binding/1") || str "profile" m <> "fsquint.automata-approval/1" then failwith "Unknown binding profile"
+    let sourceFile = if sampled then str "sourceFile" m else "approval_test.qnt"
+    if sampled && sourceFile <> "approval.qnt" then failwith "Unknown sampled source"
     let raw = File.ReadAllBytes(Path.Combine(root, "fixtures", name + ".itf.json"))
     for key, bytes in ["traceSha256", raw; "modelSha256", File.ReadAllBytes(Path.Combine(root,"approval.qnt"));
-                       "scenarioSha256", File.ReadAllBytes(Path.Combine(root,"approval_test.qnt"))] do
+                       "scenarioSha256", File.ReadAllBytes(Path.Combine(root,sourceFile))] do
         if str key m <> hash bytes then failwith ("Provenance mismatch: " + key)
     let document = Itf.read Itf.defaultLimits raw |> unwrap
     for bindings in document.States do
@@ -83,6 +87,8 @@ let load root name (manifestBytes: byte[]) =
         validateObservation (field "state" bindings)
     let entries = m.GetProperty("steps").EnumerateArray() |> Seq.toList
     if entries.Length <> document.States.Length - 1 then failwith "Binding length mismatch"
+    if sampled && (m.GetProperty("maxSteps").GetInt32() <> 30 || entries.Length <> 30 || System.String.IsNullOrWhiteSpace(str "seed" m)) then
+        failwith "Unexpected sample bound or missing seed"
     let inputs, bindings = entries |> List.mapi(fun index entry ->
         fields ["index";"op";"actor";"line"] entry
         if entry.GetProperty("index").GetInt32() <> index + 1 then failwith "Non-contiguous binding"
@@ -92,14 +98,15 @@ let load root name (manifestBytes: byte[]) =
         let recorded = document.States[index+1] |> List.find(fst >> (=) "input") |> snd
         if recorded <> expectedInput then failwith "Input instrumentation differs from binding"
         let line = entry.GetProperty("line").GetInt32()
-        let sourceLines = File.ReadAllLines(Path.Combine(root,"approval_test.qnt"))
-        if line < 1 || line > sourceLines.Length || not(sourceLines[line-1].Contains(sprintf "op: \"%s\", actor: \"%s\"" op actor)) then
+        let sourceLines = File.ReadAllLines(Path.Combine(root,sourceFile))
+        let needle = if sampled then "action step" else sprintf "op: \"%s\", actor: \"%s\"" op actor
+        if line < 1 || line > sourceLines.Length || not(sourceLines[line-1].Contains needle) then
             failwith "Source binding does not identify the input"
-        input, (op + ":" + actor, { Path = "approval_test.qnt"; Line = line; Column = 1 })) |> List.unzip
+        input, (op + ":" + actor, { Path = sourceFile; Line = line; Column = 1 })) |> List.unzip
     let observations = document.States |> List.map(fun bindings ->
         bindings |> List.filter(fst >> (=) "state") |> List.map(fun (k,v) -> k,project v) |> state)
     let environment = {
-        Seed = "42"; Bounds = ["steps", int64 inputs.Length]
+        Seed = (if sampled then str "seed" m else "42"); Bounds = ["steps", int64 inputs.Length]
         ToolFingerprint = "939b64095b706017f2f202c6f99c860c40be7c31bddc2b98557316e50f42cd7f"
         ProfileFingerprint = hash (Text.Encoding.UTF8.GetBytes "fsquint.automata-approval/1")
         ContractFingerprint = str "modelSha256" m
@@ -119,7 +126,9 @@ let run mutation (inputs: Input list) (trace: QuintReplayTrace) onInit =
         (observe mutation >> Ok) (fun _ -> Ok()) bindings trace
 
 let check root =
-    for name in ["approvalTest";"cancelTest";"pendingCancelTest";"approvedCancelTest"] do
+    let names = ["approvalTest";"cancelTest";"pendingCancelTest";"approvedCancelTest"] @
+                [for seed in [1;7;42;99;123;1000;2000;3000] -> sprintf "sampled/seed-%d" seed]
+    for name in names do
         let bytes = File.ReadAllBytes(Path.Combine(root,"fixtures",name+".binding.json"))
         let inputs, trace = load root name bytes
         let good = run Correct inputs trace ignore
@@ -127,7 +136,14 @@ let check root =
         if name = "approvalTest" then
             for mutation, expectedStep in [Guard,2; ActionOrder,1; WrongTarget,1; Projection,1] do
                 match (run mutation inputs trace ignore).Outcome with
-                | ReplayOutcome.Diverged(step,_,_,_,_,_) when step = expectedStep -> ()
+                | ReplayOutcome.Diverged(step,action,source,path,expected,actual) when step = expectedStep ->
+                    let diagnostic = JsonSerializer.Serialize {|
+                        mutation=string mutation; step=step; input=action; source=source; path=path
+                        traceIdentity=trace.TraceIdentity; modelDigest=trace.Environment.ContractFingerprint
+                        expected=QuintReplay.encodeState expected |> unwrap
+                        actual=QuintReplay.encodeState actual |> unwrap
+                        reproduce="dotnet run --project examples/AutomataReplay/AutomataReplay.fsproj -c Release --no-restore" |}
+                    printfn "DIVERGENCE %s" diagnostic
                 | other -> failwithf "Mutation %A escaped or diverged at wrong step: %A" mutation other
             for bad in [Text.Encoding.UTF8.GetString(bytes).Replace("\"submit\"","\"unknown\"");
                         Text.Encoding.UTF8.GetString(bytes).Replace("\"index\": 1", "\"index\": 99"); "{}"] do
@@ -139,4 +155,4 @@ let check root =
                         false
                     with _ -> true
                 if not rejected || initialized then failwith "Malformed binding reached initialization"
-    printfn "PASS: four offline Quint approval traces; four mutations at declared steps; malformed binding rejected before initialization."
+    printfn "PASS: four fixed and eight sampled offline approval traces; four mutations at declared steps; malformed binding rejected before initialization."
