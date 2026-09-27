@@ -64,3 +64,4 @@ Conformance.check System.AppContext.BaseDirectory
 Resolver.check System.AppContext.BaseDirectory
 Turnstile.check System.AppContext.BaseDirectory
 Correction.check System.AppContext.BaseDirectory
+Protocol.check System.AppContext.BaseDirectory

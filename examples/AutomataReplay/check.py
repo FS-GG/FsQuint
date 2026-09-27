@@ -87,6 +87,8 @@ def main():
                      ["typecheck", "turnstile.qnt"],
                      ["run", "correction.qnt", "--invariant", "safety", "--seed", "42",
                       "--max-samples", "1000", "--max-steps", "10", "--verbosity", "1"],
+                     ["run", "protocol.qnt", "--invariant", "safety", "--seed", "42",
+                      "--max-samples", "1000", "--max-steps", "10", "--verbosity", "1"],
                      ["test", "turnstile_test.qnt", "--seed", "42"],
                      ["typecheck", "resolver.qnt"],
                      ["test", "resolver_test.qnt", "--seed", "42"],

@@ -24,6 +24,8 @@
     <Compile Include="Resolver.fs" />
     <Compile Include="Turnstile.fs" />
     <Compile Include="Correction.fs" />
+    <Compile Include="ProtocolStore.fs" />
+    <Compile Include="Protocol.fs" />
     <Compile Include="Program.fs" />
     <None Include="fixtures/**;*.qnt;baseline.json;packages.lock.json;*.fs" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
