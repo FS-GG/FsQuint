@@ -8,10 +8,13 @@
         "resolved": "10.1.401",
         "contentHash": "IGqjL9U8pQl7CaCpFP3f5slZMduE8c7ZBx7HycAQ9dc1tawyniNyw7Fh6L2cShIoQDcaDL+S8/kokhWs8WwnBQ=="
       },
-      "fsquint": {
-        "type": "Project",
+      "FsQuint": {
+        "type": "Direct",
+        "requested": "[0.1.0, )",
+        "resolved": "0.1.0",
+        "contentHash": "S1dCVHdcLRdXmZnjCOk+nJLhjO3acz705bEeQm2cBrwxiEsDpVj7PD8tECcKo/Bzpbw5ZOI4bLMWdlqSkISsbg==",
         "dependencies": {
-          "FSharp.Core": "[10.1.401, )"
+          "FSharp.Core": "10.1.302"
         }
       }
     }

@@ -4,21 +4,21 @@
     "net10.0": {
       "FSharp.Core": {
         "type": "Direct",
-        "requested": "[10.1.302, )",
-        "resolved": "10.1.302",
-        "contentHash": "bN7XMQrAQg1dyHScJ7FcsznERBkvm74LtIo1O6C5mUzgbDqSwNbDpb3+nBGaJAjDmtC/suK5Vx5pFysKY6Hm+Q=="
+        "requested": "[10.1.401, )",
+        "resolved": "10.1.401",
+        "contentHash": "IGqjL9U8pQl7CaCpFP3f5slZMduE8c7ZBx7HycAQ9dc1tawyniNyw7Fh6L2cShIoQDcaDL+S8/kokhWs8WwnBQ=="
       },
       "fsquint": {
         "type": "Project",
         "dependencies": {
-          "FSharp.Core": "[10.1.302, )"
+          "FSharp.Core": "[10.1.401, )"
         }
       },
       "fsquint.tooling": {
         "type": "Project",
         "dependencies": {
-          "FSharp.Core": "[10.1.302, )",
-          "FsQuint": "[0.1.0-preview.1, )"
+          "FSharp.Core": "[10.1.401, )",
+          "FsQuint": "[0.1.0, )"
         }
       }
     }

@@ -4,5 +4,5 @@
 <Authors>FS-GG</Authors><RepositoryUrl>https://github.com/FS-GG/FsQuint</RepositoryUrl><RepositoryType>git</RepositoryType>
 <PackageLicenseExpression>MIT</PackageLicenseExpression><PackageReadmeFile>README.md</PackageReadmeFile>
 <DisableImplicitFSharpCoreReference>true</DisableImplicitFSharpCoreReference>
-</PropertyGroup><ItemGroup><PackageReference Include="FSharp.Core" Version="10.1.302" Condition="'$(MSBuildProjectName)' != 'BoundedQueue'" /></ItemGroup>
+</PropertyGroup><ItemGroup><PackageReference Include="FSharp.Core" Version="10.1.401" Condition="'$(MSBuildProjectName)' != 'BoundedQueue'" /></ItemGroup>
 <ItemGroup Condition="'$(IsPackable)' != 'false'"><None Include="$(MSBuildThisFileDirectory)README.md" Pack="true" PackagePath="/" /><None Include="$(MSBuildThisFileDirectory)LICENSE" Pack="true" PackagePath="/" /><None Include="$(MSBuildThisFileDirectory)NOTICE.md" Pack="true" PackagePath="/" /><None Include="$(MSBuildProjectDirectory)/*.fsi" Pack="true" PackagePath="api-surface/" /></ItemGroup></Project>
