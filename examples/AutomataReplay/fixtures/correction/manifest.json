@@ -1,0 +1,14 @@
+{
+  "correction.qnt": "1d5c0e81a211bbcc0195d7e6d8811f2e3f7081067a38e34b3926a6c2e145f0f6",
+  "correction_test.qnt": "102868ef9b63347c60ac8a9f65b337e3ac27fc2756be50393ebd409f95bd18b3",
+  "fixtures/correction/case0.itf.json": "702bbf4eabbdcf2a9cec6a967396e5b3d33f4f3402b530455f796248fd730e9e",
+  "fixtures/correction/case1.itf.json": "a455406208d512a0d38bc7753a105df5734cb0b563e59e5dfafecefd4ca2d2b1",
+  "fixtures/correction/case2.itf.json": "95bc6377ce1b405a753e69c21c57a3c2ce88f7dc6ba86f2c82ad4fdbde378767",
+  "fixtures/correction/case3.itf.json": "82f4239818f5b22729405b7078cf7f8063ebafd046216716bee8a2a04f329416",
+  "fixtures/correction/case4.itf.json": "deb92ab1107d7dec380685da14f5ed65e6409da2d35f99b8680ce89ef2117fc7",
+  "fixtures/correction/case5.itf.json": "290cdd4e8d6f97c78e2f2189bfdbe5e863373d5afe6271338fe5e7116c6be838",
+  "fixtures/correction/case6.itf.json": "0879776ddeac569d71395fe9f797069f3ee0aab7e181a3bf7c3f1250abbd3456",
+  "fixtures/correction/case7.itf.json": "0638bd7bf261db1dfef716a47cb24e4b32b5f15b6fadd7a8e0c6d2f97b2a14ac",
+  "fixtures/correction/case8.itf.json": "28613302976a021f47af82f3edb9379624b9cf92b657f420301198c03c9af433",
+  "fixtures/correction/case9.itf.json": "4231ebb5d3e94d07e0515858a9f596b4f66967a3ee2af6be78b653a3487310d9"
+}

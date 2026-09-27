@@ -14,5 +14,28 @@
   "evaluatorVersion": "0.6.0",
   "semanticProfile": "fsquint.automata-approval/1",
   "implementationStatus": "pure-conformance-qualified",
-  "evaluatorSha256": "b2efdeac5713d153e41bf2143b94ed75d888fdd5637f4a5d61a04c695313510a"
+  "evaluatorSha256": "b2efdeac5713d153e41bf2143b94ed75d888fdd5637f4a5d61a04c695313510a",
+  "additionalPackages": [
+    {
+      "id": "ByzantineSystems.Automata.Runtime",
+      "version": "0.5.0",
+      "sha256": "ae2ee4ded41cf5165957138b01fd9d295bba171fb562f089cb02427384187238",
+      "repositoryCommit": "03c3282f25888a32d36e53fa708f0342c328ccfc",
+      "licenseExpression": "LGPL-3.0-or-later"
+    },
+    {
+      "id": "ByzantineSystems.Automata.Storage",
+      "version": "0.5.0",
+      "sha256": "50e7a88c90f548d25de2d372de0a48c61c4bf44b18b1b12f031e2c7ec749c304",
+      "repositoryCommit": "03c3282f25888a32d36e53fa708f0342c328ccfc",
+      "licenseExpression": "LGPL-3.0-or-later"
+    },
+    {
+      "id": "ByzantineSystems.Automata.Resilience",
+      "version": "0.5.0",
+      "sha256": "9b6eafb091c3775c6f04e4c8f1bac7ac2698ee3705e0ab91bd6f14372526c6eb",
+      "repositoryCommit": "03c3282f25888a32d36e53fa708f0342c328ccfc",
+      "licenseExpression": "LGPL-3.0-or-later"
+    }
+  ]
 }

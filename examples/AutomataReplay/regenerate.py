@@ -95,7 +95,7 @@ def main():
 
     with tempfile.TemporaryDirectory(prefix="fsquint-generation-") as scratch:
         scratch = Path(scratch)
-        for module in ("approval", "resolver", "turnstile"):
+        for module in ("approval", "resolver", "turnstile", "correction"):
             invoke(["typecheck", f"{module}.qnt"])
             invoke(["test", f"{module}_test.qnt", "--seed", "42", "--max-samples", "1",
                     "--out-itf", str(scratch / f"{module}_{{test}}_{{seq}}.itf.json")])
@@ -125,6 +125,11 @@ def main():
             handlers.add(result["handler"])
             rule_markers.update(e["node"] for e in result["actions"] if e["kind"] == "rule")
         accept(next(scratch.glob("turnstile_passageTest_*.itf.json")), "turnstile.itf.json")
+        for case in range(10):
+            matches = list(scratch.glob(f"correction_case{case}Test_*.itf.json"))
+            if len(matches) != 1:
+                raise RuntimeError("Missing correction witness")
+            accept(matches[0], f"correction/case{case}.itf.json")
         line = next(i for i, s in enumerate((root / "approval.qnt").read_text().splitlines(), 1) if "action step" in s)
         for seed in (1, 7, 42, 99, 123, 1000, 2000, 3000):
             path = scratch / f"sample-{seed}.itf.json"
@@ -140,6 +145,8 @@ def main():
     json_file(root / "fixtures/resolver/manifest.json", {name: digest(root / name) for name in resolver_files})
     turnstile_files = ["fixtures/turnstile.itf.json", "turnstile.qnt", "turnstile_test.qnt"]
     json_file(root / "fixtures/turnstile.manifest.json", {name: digest(root / name) for name in turnstile_files})
+    correction_files = ["correction.qnt", "correction_test.qnt"] + [f"fixtures/correction/case{i}.itf.json" for i in range(10)]
+    json_file(root / "fixtures/correction/manifest.json", {name: digest(root / name) for name in correction_files})
     if inputs_seen != allowed or phases != {"Draft", "Pending", "Approved", "Published", "Cancelled"}:
         raise RuntimeError("Required input/phase coverage missing")
     if not {"Initial", "Applied", "NotAuthorized", "Unhandled", "Terminated"}.issubset(outcomes):
@@ -149,6 +156,7 @@ def main():
             raise RuntimeError("Required ordered action coverage missing")
     coverage = {"schema": "fsquint.coverage/1", "inputs": sorted([list(x) for x in inputs_seen]),
                 "phases": sorted(phases), "outcomes": sorted(outcomes), "resolverCases": list(range(13)),
+                "correctionCases": list(range(10)),
                 "actionOrders": [[list(pair) for pair in order] for order in sorted(action_orders)],
                 "resolverPaths": [[list(exits), list(entries)] for exits, entries in sorted(resolver_paths)],
                 "resolverHandlers": sorted(handlers), "ruleMarkers": sorted(rule_markers),
