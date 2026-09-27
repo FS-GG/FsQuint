@@ -1,0 +1,119 @@
+{
+  "schemaVersion": 1,
+  "sourceCommit": "03c3282f25888a32d36e53fa708f0342c328ccfc",
+  "sdk": "10.0.401",
+  "postgres": "postgres (PostgreSQL) 19beta3",
+  "packages": [
+    {
+      "id": "byzantinesystems.automata.storage.sqlite",
+      "version": "0.5.0",
+      "sourceCommit": "03c3282f25888a32d36e53fa708f0342c328ccfc",
+      "sha256": "86f0038120244195deebc17ff7be737a4e554b8fc69288b4b47d3a295fdd8102"
+    },
+    {
+      "id": "byzantinesystems.automata.storage.postgres",
+      "version": "0.5.0",
+      "sourceCommit": "03c3282f25888a32d36e53fa708f0342c328ccfc",
+      "sha256": "8260f381feeffcb3466397f6f755e053e891216391e280ed59c5f5ffe570e0af"
+    }
+  ],
+  "timeoutsSeconds": {
+    "upstreamSuite": 300,
+    "crashBoundary": 30,
+    "recovery": 30
+  },
+  "sqlite": {
+    "tests": 118,
+    "passed": 118,
+    "ignored": 0,
+    "elapsedSeconds": 17.642,
+    "command": [
+      "dotnet",
+      "run",
+      "--project",
+      "tests/ByzantineSystems.Automata.Storage.Sqlite.Tests",
+      "-c",
+      "Release",
+      "--",
+      "--summary",
+      "--sequenced"
+    ],
+    "logSha256": "3b65e52f401ce1bdc91ac40368651374526bbb8517cf3c6f6c4aebcd09a85457",
+    "crashRecovery": {
+      "boundary": "commit-first-claim-second",
+      "workerExit": -9,
+      "recovered": {
+        "state": 2,
+        "epoch": 2,
+        "actions": 2,
+        "newFenceToken": true
+      },
+      "serverImmediateRestart": false,
+      "elapsedSeconds": 1.693
+    }
+  },
+  "postgresql": {
+    "tests": 152,
+    "passed": 152,
+    "ignored": 0,
+    "elapsedSeconds": 13.356,
+    "command": [
+      "dotnet",
+      "run",
+      "--project",
+      "tests/ByzantineSystems.Automata.Storage.Postgres.Tests",
+      "-c",
+      "Release",
+      "--",
+      "--summary",
+      "--sequenced"
+    ],
+    "logSha256": "acd8c057ccbe2dd4be09699ae0bc8592e356bb8b7c5bfb73a22e8795b769add5",
+    "crashRecovery": {
+      "boundary": "commit-first-claim-second",
+      "workerExit": -9,
+      "recovered": {
+        "state": 2,
+        "epoch": 2,
+        "actions": 2,
+        "newFenceToken": true
+      },
+      "serverImmediateRestart": true,
+      "elapsedSeconds": 7.635
+    },
+    "correctionRecovery": {
+      "tests": 1,
+      "passed": 1,
+      "ignored": 0,
+      "elapsedSeconds": 1.974,
+      "command": [
+        "dotnet",
+        "run",
+        "--project",
+        "tests/ByzantineSystems.Automata.Storage.Postgres.Tests",
+        "-c",
+        "Release",
+        "--",
+        "--summary",
+        "--sequenced",
+        "--filter-test-case",
+        "a correction rewrites the timeline and keeps what was believed before it"
+      ],
+      "logSha256": "cdcbd48d9bdba12fea211161f9658e86631674b370614ea70a64d26498666ced",
+      "persistedRows": {
+        "instance_state": 3,
+        "instance_state_history": 3,
+        "transition": 3,
+        "command_correction": 1
+      },
+      "rowsSha256": "331beb1fbad113566e67c8916ffdb3fdb7357b032d5ac0a869f29674a255d78b"
+    }
+  },
+  "status": "passed",
+  "harnessSha256": {
+    "Program.fs": "abc39436d33c26050ad441bc47cb07a85ae88c93fe331a5d114dfe9bfbaa7c24",
+    "check.py": "6e0eed604def86083d3a46f9a8c04ffee2500b945bf28f4cdfca6d64f2c54b80",
+    "provision.py": "e949296bdc332f006c7b9efe0a7eae26c2e756abfadb0bf9346ab7ac81d972b1",
+    "packages.lock.json": "1aa7ab8affbbc8f27c85aa29f2cc30178b6326d7c20f788ce248226282c31636"
+  }
+}

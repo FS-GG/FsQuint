@@ -3,7 +3,8 @@
 The protocol model and harness have separate implementations. `protocol.qnt` defines a
 shared-store transition relation over two entities, two workers and three command slots.
 Commands move through ready, leased and terminal states; claim tokens are distinct from
-entity epochs. Atomic commit updates history, state and outbox together. Delivery attempts,+destination deduplication and acknowledgment are separate facts. There is no network model;
+entity epochs. Atomic commit updates history, state and outbox together. Delivery attempts,
+destination deduplication and acknowledgment are separate facts. There is no network model;
 the workers coordinate through the store, so plain Quint is used.
 
 `ProtocolStore.fs` is original test infrastructure implementing Automata's public store
