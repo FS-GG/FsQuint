@@ -25,10 +25,22 @@ def main():
             shutil.copy2(repo / name, root / name)
         env = dict(os.environ, NUGET_PACKAGES=str(root / "packages"),
                    NUGET_HTTP_CACHE_PATH=str(root / "http"))
-        subprocess.run(["dotnet", "restore", "AutomataReplay.fsproj", "--locked-mode",
-                        "--source", str(repo / "artifacts/packages"),
-                        "--source", "https://api.nuget.org/v3/index.json"],
-                       cwd=root, env=env, check=True)
+        restore = ["dotnet", "restore", "AutomataReplay.fsproj",
+                   "--source", str(repo / "artifacts/packages"),
+                   "--source", "https://api.nuget.org/v3/index.json"]
+        # FsQuint is the package just built from this candidate, including its source revision.
+        # Refresh only that content identity; all third-party locks must stay byte-for-byte equal.
+        locked = json.loads((root / "packages.lock.json").read_text())
+        subprocess.run([*restore, "--force-evaluate"], cwd=root, env=env, check=True)
+        refreshed = json.loads((root / "packages.lock.json").read_text())
+        locked["dependencies"]["net10.0"]["FsQuint"]["contentHash"] = refreshed["dependencies"]["net10.0"]["FsQuint"]["contentHash"]
+        if locked != refreshed:
+            raise RuntimeError("Dependency lock changed beyond the candidate FsQuint content hash")
+        candidate = repo / "artifacts/packages/FsQuint.0.1.1.nupkg"
+        restored = root / "packages/fsquint/0.1.1/fsquint.0.1.1.nupkg"
+        if restored.read_bytes() != candidate.read_bytes():
+            raise RuntimeError("Consumer did not restore the exact candidate FsQuint package")
+        subprocess.run([*restore, "--locked-mode"], cwd=root, env=env, check=True)
         package_id = baseline["packageId"].lower()
         version = baseline["packageVersion"]
         archive = root / "packages" / package_id / version / f"{package_id}.{version}.nupkg"

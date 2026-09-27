@@ -9,13 +9,15 @@ Run the package characterization:
 
 ```sh
 dotnet pack src/FsQuint/FsQuint.fsproj -c Release -o artifacts/packages
-dotnet restore examples/AutomataReplay/AutomataReplay.fsproj --locked-mode --source "$PWD/artifacts/packages" --source https://api.nuget.org/v3/index.json
-dotnet run --project examples/AutomataReplay/AutomataReplay.fsproj -c Release --no-restore
+python3 examples/AutomataReplay/check.py
 ```
 
 For the CI qualification, run `python3 examples/AutomataReplay/check.py`. It creates an
 isolated consumer and package cache, restores the lock file, verifies the package archive's
 SHA-256 and source/license metadata against the baseline, and executes the characterization.
+The candidate FsQuint package includes its source revision: only its content hash is refreshed
+in the temporary lock, and its archive must exactly equal the locally built package. All
+third-party lock entries remain unchanged; a subsequent locked restore must pass.
 `eng/check.sh` includes this check. Temporary files are removed even when qualification fails.
 
 The first restore needs NuGet access, or an existing package cache. Running the executable
