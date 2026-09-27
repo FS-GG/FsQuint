@@ -81,3 +81,7 @@ See the [compatibility policy](docs/compatibility.md) for supported APIs, trace 
 and tooling platform; the [roadmap](docs/roadmaps/fsquint.md) and
 [extraction decisions](docs/decisions.md) for design context; and
 [source notices](NOTICE.md) for attribution.
+
+The [Quint–Automata integration design](docs/roadmaps/2026-09-27-090245-quint-automata-integration.md)
+researches the relationships between Quint, Automata and FsQuint and proposes a
+staged integration roadmap; the integration is not yet implemented.
