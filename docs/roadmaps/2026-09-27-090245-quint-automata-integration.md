@@ -444,7 +444,8 @@ Stages are intentionally evidence-based. Estimates are planning ranges for one e
   `Replay.plan`. Wrong-version, tie-order, leaked-effect and policy mutations diverge at step 1.
   Runtime/Storage/Resilience 0.5.0 package identities are pinned with the original source commit.
   This stage observes pure plan output only; it makes no store atomicity or delivery claim.
-- [ ] **FQA-6 — controlled runtime protocol:** implemented; awaiting merge readback.
+- [x] **FQA-6 — controlled runtime protocol:** merged in [PR #36](https://github.com/FS-GG/FsQuint/pull/36),
+  commit `3347d9f50360587301fe5bd9f1db9953908f689e`; merge readback confirmed.
   [Controlled runtime profile](../../examples/AutomataReplay/PROTOCOL.md) uses the real
   processor/dispatcher through public interfaces and barriers. Seven schedules run twice
   and match independent Quint results; all finite model schedule prefixes satisfy accounting
@@ -452,7 +453,15 @@ Stages are intentionally evidence-based. Estimates are planning ranges for one e
   are detected. Cleanup cancels and joins workers. Model/store assumptions, uncontrolled
   timers, progress assumptions and the decision not to add Coyote are explicit.
   This test-store qualification does not establish SQL provider semantics.
-- [ ] **FQA-7 — real-provider qualification:** not started.
+- [ ] **FQA-7 — real-provider qualification:** implemented and locally qualified; awaiting merge readback.
+  [Native provider harness](../../examples/AutomataProviders/README.md) runs the pinned upstream
+  SQLite and PostgreSQL suites without silently skipping unsupported capabilities. Original
+  public-API workers exercise SIGKILL, real-clock lease expiry, fencing and state/outbox recovery.
+  PostgreSQL additionally checks corrected historical rows across immediate server restart.
+  Private clusters, separate database roles, pinned prerequisites, finite budgets and CI artifacts
+  keep this qualification reproducible and distinct from the independent Quint protocol model.
+  Local evidence: 118 SQLite and 152 PostgreSQL tests pass with zero ignored; both crash
+  witnesses pass, and all ten persisted correction rows survive restart unchanged.
 - [ ] **FQA-8 — optional expansion decisions:** not started; consumer/ownership gates remain applicable.
 
 Delivery decision: on 2026-09-27 the user explicitly authorized continuing to completion

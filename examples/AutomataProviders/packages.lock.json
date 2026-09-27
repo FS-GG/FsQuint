@@ -1,0 +1,200 @@
+{
+  "version": 1,
+  "dependencies": {
+    "net10.0": {
+      "ByzantineSystems.Automata.Storage.Postgres": {
+        "type": "Direct",
+        "requested": "[0.5.0, 0.5.0]",
+        "resolved": "0.5.0",
+        "contentHash": "sZbf1dnDz+uhr6DGkI06K+Re/CEni4SIzetJUO1ApBk1NH+mMoPrkX/pT3Mx8CzNKVxeTSxDsXIc+9xjSv5XGQ==",
+        "dependencies": {
+          "ByzantineSystems.Automata.Resilience": "0.5.0",
+          "ByzantineSystems.Automata.Storage": "0.5.0",
+          "FSharp.Core": "10.1.401",
+          "FSharp.SystemTextJson": "1.4.36",
+          "FsToolkit.ErrorHandling": "5.2.0",
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "10.0.12",
+          "Microsoft.Extensions.Logging.Abstractions": "10.0.12",
+          "Npgsql": "10.0.3",
+          "Polly.Core": "8.8.0",
+          "SqlHydra.Query": "5.0.0",
+          "dbup-postgresql": "7.0.1"
+        }
+      },
+      "ByzantineSystems.Automata.Storage.Sqlite": {
+        "type": "Direct",
+        "requested": "[0.5.0, 0.5.0]",
+        "resolved": "0.5.0",
+        "contentHash": "QGVSPegfq0vekHo0dRDt6uPF0pL94Fyj98AaR51knRPFxHYGZt4sP5Vt0aQqS06ywUeykvk/pQGPrNHJAtZR4g==",
+        "dependencies": {
+          "ByzantineSystems.Automata.Resilience": "0.5.0",
+          "ByzantineSystems.Automata.Storage": "0.5.0",
+          "FSharp.Core": "10.1.401",
+          "FSharp.SystemTextJson": "1.4.36",
+          "FsToolkit.ErrorHandling": "5.2.0",
+          "Microsoft.Data.Sqlite": "10.0.12",
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "10.0.12",
+          "Microsoft.Extensions.Logging.Abstractions": "10.0.12",
+          "Polly.Core": "8.8.0",
+          "SqlHydra.Query": "5.0.0",
+          "dbup-sqlite": "6.0.4"
+        }
+      },
+      "FSharp.Core": {
+        "type": "Direct",
+        "requested": "[10.1.401, )",
+        "resolved": "10.1.401",
+        "contentHash": "IGqjL9U8pQl7CaCpFP3f5slZMduE8c7ZBx7HycAQ9dc1tawyniNyw7Fh6L2cShIoQDcaDL+S8/kokhWs8WwnBQ=="
+      },
+      "ByzantineSystems.Automata.Core": {
+        "type": "Transitive",
+        "resolved": "0.5.0",
+        "contentHash": "2HLpHPt4kYT4zLFGaPA77dfY8IrnkJ/40DJDrBK6WlBUR4vMyhzbxKRrthAlUjzECN8O3TaxguSkXarj9WD9xQ=="
+      },
+      "ByzantineSystems.Automata.Resilience": {
+        "type": "Transitive",
+        "resolved": "0.5.0",
+        "contentHash": "efafgWt2JIr/R+2ZLMMZXlcbjb+vHFjaIBV+NRykUf3ALHZLDjVs84kP2EXpULAIdOHVM/m0/CTwnykowR901Q==",
+        "dependencies": {
+          "ByzantineSystems.Automata.Core": "0.5.0",
+          "Polly.Core": "8.8.0"
+        }
+      },
+      "ByzantineSystems.Automata.Storage": {
+        "type": "Transitive",
+        "resolved": "0.5.0",
+        "contentHash": "XERS1QoyUN2eJ9CFbgdVM/P/v3613zZXMDcxq0halSRORH9xRPTspT6/awa2LdVEaqpvONep70bqSjN27ig4qg==",
+        "dependencies": {
+          "ByzantineSystems.Automata.Core": "0.5.0"
+        }
+      },
+      "dbup-core": {
+        "type": "Transitive",
+        "resolved": "6.1.1",
+        "contentHash": "kgpuyJVEFJHoIj/slnc994Go88aoeZqNDfGHDBr4sh7CsEWwJhOTCt/FJqO4ziUImL5L0NEY0kxxOiNgPKI2Fw==",
+        "dependencies": {
+          "Microsoft.Extensions.Logging.Abstractions": "8.0.0"
+        }
+      },
+      "dbup-postgresql": {
+        "type": "Transitive",
+        "resolved": "7.0.1",
+        "contentHash": "mRnmENWWPuuMZ538gOd1mZnzucx6FQk0anmw3EABjGfcbp24FDb9QdGepYrDiaM8K9s5/gd49+5cmBOlniH/lg==",
+        "dependencies": {
+          "Npgsql": "10.0.1",
+          "dbup-core": "6.1.1"
+        }
+      },
+      "dbup-sqlite": {
+        "type": "Transitive",
+        "resolved": "6.0.4",
+        "contentHash": "eEUr/hCvQHzvPjCSqV6Ic5cZTFiKXLse2k9e5ji8KDgIBD12BCvDdq2E6+C8GbYCZ8GEqlF7uRxVcyvYfrebQg==",
+        "dependencies": {
+          "Microsoft.Data.Sqlite.Core": "9.0.10",
+          "dbup-core": "6.0.15"
+        }
+      },
+      "FastExpressionCompiler": {
+        "type": "Transitive",
+        "resolved": "5.1.1",
+        "contentHash": "oRzJ5PzMZCZiEbFjLmEh/XzvGnL+uIWJHihyCvlFUiE4NLujLNC8a9MBF4DMEQlQaXZM40iSNdckNaW1VQt72Q=="
+      },
+      "FSharp.SystemTextJson": {
+        "type": "Transitive",
+        "resolved": "1.4.36",
+        "contentHash": "1xLk0SBF1nedD74B77rcArjD2d+DeZwbNI7BVCAyKwIBERo1VoX8Mf4AtX0OV2L3ZeM/XS1b6BuhXCyoh0KBnw==",
+        "dependencies": {
+          "FSharp.Core": "4.7.0"
+        }
+      },
+      "FsToolkit.ErrorHandling": {
+        "type": "Transitive",
+        "resolved": "5.2.0",
+        "contentHash": "Y7NfN1gDJ5eOANmi8/aEjGHTWrJOYyqwmgtdA3BIZggd0Ph0IIsbewtgNaLkDYFGgkKw6mGlk0iw4RZ2ZRKZhA==",
+        "dependencies": {
+          "FSharp.Core": "9.0.300"
+        }
+      },
+      "Microsoft.Data.Sqlite": {
+        "type": "Transitive",
+        "resolved": "10.0.12",
+        "contentHash": "xUq9xUc653ue7ac2rMfCaf8UQN+U3zS8poWYlugycpvJllplMM0Mk7v/+MM0CTlu9zGvbGML4BPH8YWhrUOfGw==",
+        "dependencies": {
+          "Microsoft.Data.Sqlite.Core": "10.0.12",
+          "SQLitePCLRaw.bundle_e_sqlite3": "2.1.12",
+          "SQLitePCLRaw.core": "2.1.12"
+        }
+      },
+      "Microsoft.Data.Sqlite.Core": {
+        "type": "Transitive",
+        "resolved": "10.0.12",
+        "contentHash": "2aL9eL5HQr0V4b8V909SD+jQAx6qnTTl7sT/v3D8dIvmr2UGdpZIQxqm1pj2Js3e4EYTvpw0oMH7DjapJJuPPw==",
+        "dependencies": {
+          "SQLitePCLRaw.core": "2.1.12"
+        }
+      },
+      "Microsoft.Extensions.DependencyInjection.Abstractions": {
+        "type": "Transitive",
+        "resolved": "10.0.12",
+        "contentHash": "9/qymSh7hVDMGTGwrLz8MRp5zRyXy9adGDOs4HwRdnLil3oZGYuWeZjbmHgCQ9BL1qBroVfgUK3U/nb61617Cw=="
+      },
+      "Microsoft.Extensions.Logging.Abstractions": {
+        "type": "Transitive",
+        "resolved": "10.0.12",
+        "contentHash": "+24lC4plfbEDNfLAdTV/SWKS7dW+16X4HdydO3R++134kSNTzcbYA4KpR1Hdh6uWisB8Za3AzwyOn+K+NxWIug==",
+        "dependencies": {
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "10.0.12"
+        }
+      },
+      "Npgsql": {
+        "type": "Transitive",
+        "resolved": "10.0.3",
+        "contentHash": "7nb5YzXuvWWJxB0J8DiyL3we+X4FOctZrt0fIBnucOIaIevFEEwGQVZKtiu9olXdlNAK1eNgqSral6r/jlhI4w==",
+        "dependencies": {
+          "Microsoft.Extensions.Logging.Abstractions": "10.0.0"
+        }
+      },
+      "Polly.Core": {
+        "type": "Transitive",
+        "resolved": "8.8.0",
+        "contentHash": "TewV9uNFsoRFggoFbTAGFwsMYPuckA+wTIpQPyhLL9BANRPQRENz2S4bwATrB3HBOakN5oKLFIllPiDnVecmJg=="
+      },
+      "SqlHydra.Query": {
+        "type": "Transitive",
+        "resolved": "5.0.0",
+        "contentHash": "VIZtcjq+k+8U9H8peFfePwi0Ni9g68z51fu/CfhOco9RJz/3FQfswaUxdsVEB6vJ9HdBYmSHDvbEj61D4v23xA==",
+        "dependencies": {
+          "FSharp.Core": "10.1.201",
+          "FastExpressionCompiler": "5.1.1"
+        }
+      },
+      "SQLitePCLRaw.bundle_e_sqlite3": {
+        "type": "Transitive",
+        "resolved": "2.1.12",
+        "contentHash": "mAgscpQMLw5/nfA1Q5oJVAT29yROUo1ifZGbbTpx/lwZpSxMUGoYbKfmvdm8oXER+RzxqBmmQzeBEVKfeHv2nw==",
+        "dependencies": {
+          "SQLitePCLRaw.lib.e_sqlite3": "2.1.12",
+          "SQLitePCLRaw.provider.e_sqlite3": "2.1.12"
+        }
+      },
+      "SQLitePCLRaw.core": {
+        "type": "Transitive",
+        "resolved": "2.1.12",
+        "contentHash": "ETpNw9DY3ckWLgRRAeCHj+GKOuPi61aeczkXhgHexUvqoZBAYg8RYESE2J7O1M7+o6QbdSEZwrw9bfqztUVWXg=="
+      },
+      "SQLitePCLRaw.lib.e_sqlite3": {
+        "type": "Transitive",
+        "resolved": "2.1.12",
+        "contentHash": "fWi8Dbknuhgg72fWinIdjXVaqO1hHL4YBBwVLnr7e1c9TAZwJ0QE38j9syW1hwx6HaqEVTwI+O07WPdZn8Rp0w=="
+      },
+      "SQLitePCLRaw.provider.e_sqlite3": {
+        "type": "Transitive",
+        "resolved": "2.1.12",
+        "contentHash": "W3oH4XIfCzFrgUSDKHhN6N+dgzA5YHOR2VxX8GB6Qy7CyrJJgxPEG8NirgYWlPQC5P2jz2knSsexWu4tDUL33g==",
+        "dependencies": {
+          "SQLitePCLRaw.core": "2.1.12"
+        }
+      }
+    }
+  }
+}
