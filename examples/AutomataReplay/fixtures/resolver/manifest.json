@@ -1,0 +1,17 @@
+{
+  "resolver.qnt": "2750fda7decfa5c92b7a24d90e02c7457f22c1b7029a5cebfff599785fd17bbd",
+  "resolver_test.qnt": "955edfae88f6716e04a3ee212805f4c21390a7d5d7732cafde5c241ab4c93cd7",
+  "fixtures/resolver/case0.itf.json": "d8b0d93024acc2f20a64b853753f9fb69b6b4ea880b76f68000ea5e24628eb2e",
+  "fixtures/resolver/case1.itf.json": "4f9a77a1d276823e0c447436239943326f574341586efa0cbae5ccdc6ec5db4a",
+  "fixtures/resolver/case10.itf.json": "d0ff8a35451fd905139523501cebfe780c527e60dc38fc8ba157e1304e1be026",
+  "fixtures/resolver/case11.itf.json": "50574f920c5885349b7adeb0c4502bff1dad672e22702737e2b7ab26590229d0",
+  "fixtures/resolver/case12.itf.json": "eee4990b810bed612971d6866af2df9a463d4607f52a5c1bc338094d658d3458",
+  "fixtures/resolver/case2.itf.json": "edbe573aacaa58c240704b16ce15c3a7abb3387f28b8b60f093cc1f410e5ca79",
+  "fixtures/resolver/case3.itf.json": "ce28aa099f109670916bdbc37c77debe9c04d84ea3403799546055720a03973d",
+  "fixtures/resolver/case4.itf.json": "616689254871ad12bee79b1804b81776da824252b83e743d46693badd90ee967",
+  "fixtures/resolver/case5.itf.json": "de1e77540c53a03c6bc3e310190e3d045345f89d5705d5ef87c86ff231216463",
+  "fixtures/resolver/case6.itf.json": "1c3bda7501e346dce6e842f147c38c5ac4be68c89ff5821b47ff2f7dbff16b6e",
+  "fixtures/resolver/case7.itf.json": "14fc784537a290b1a103082e1b1001b18f1ebb4dbf9656a5d9ac4412fbdc975f",
+  "fixtures/resolver/case8.itf.json": "d9cdd3ab73368afe8671452ed4a891baf59e4dfb998c1f352a4e2bde57cee3ea",
+  "fixtures/resolver/case9.itf.json": "7f3488bf60f31a8b5a6ca0c9134c9b2a69b9a37631615a295bd44bf6aa02952f"
+}

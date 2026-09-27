@@ -17,8 +17,9 @@ def main():
     baseline = json.loads((example / "baseline.json").read_text())
     with tempfile.TemporaryDirectory(prefix="fsquint-automata-") as scratch:
         root = Path(scratch)
-        for name in ("AutomataReplay.fsproj", "Program.fs", "Approval.fs", "Conformance.fs",
-                     "approval.qnt", "approval_test.qnt", "baseline.json", "packages.lock.json"):
+        names = ["AutomataReplay.fsproj", "baseline.json", "packages.lock.json"]
+        names += [p.name for pattern in ("*.fs", "*.qnt") for p in example.glob(pattern)]
+        for name in names:
             shutil.copy2(example / name, root / name)
         shutil.copytree(example / "fixtures", root / "fixtures")
         for name in ("global.json", "NuGet.Config"):
@@ -66,6 +67,10 @@ def main():
         if hashlib.sha256(Path(quint).read_bytes()).hexdigest() != baseline["quintSha256"]:
             raise RuntimeError("Quint executable differs from the qualified pin")
         for args in (["typecheck", "approval.qnt"],
+                     ["typecheck", "resolver.qnt"],
+                     ["test", "resolver_test.qnt", "--seed", "42"],
+                     ["run", "resolver.qnt", "--invariant", "safety", "--seed", "42",
+                      "--max-samples", "1000", "--max-steps", "10", "--verbosity", "1"],
                      ["test", "approval_test.qnt", "--seed", "42"],
                      ["run", "approval.qnt", "--invariant", "safety", "--seed", "42",
                       "--max-samples", "1000", "--max-steps", "30", "--verbosity", "1"],

@@ -14,7 +14,7 @@ Research cutoff: **2026-09-27**.
 
 Feature identity: **FQA-01**.
 
-Status: **FQA-0 delivered; FQA-1 approval conformance implemented, awaiting delivery; runtime integration remains unqualified**.
+Status: **FQA-0/FQA-1 delivered; FQA-2 resolver conformance implemented, awaiting delivery; runtime integration remains unqualified**.
 
 Planning owner: FsQuint maintainers. Proposed upstream work requires Automata or Quint maintainer acceptance.
 
@@ -402,14 +402,22 @@ Stages are intentionally evidence-based. Estimates are planning ranges for one e
   commit `4dbe40d76d9401372694373582e9f1702b39aa07`; native merged-state readback confirmed.
   [Baseline and contract](../../examples/AutomataReplay/README.md) include isolated locked restore,
   archive/source/license provenance and public API characterization.
-- [ ] **FQA-1 — pure application example:** implemented; awaiting native merge readback.
+- [x] **FQA-1 — pure application example:** merged in [PR #31](https://github.com/FS-GG/FsQuint/pull/31),
+  commit `5c70147f91e28f071c4d18cdb5a5cc05b084b4f1`; merge readback confirmed.
   Independent Quint approval model, four raw ITF witnesses, digest-bound input manifests,
   hierarchical Automata chart and input-only domain callbacks are in
   [AutomataReplay](../../examples/AutomataReplay/README.md).
   The offline harness requires all positive traces to agree, detects four mutations at
   declared steps and refuses malformed bindings before initialization. Model execution is
   additional pinned-tool qualification, not a requirement for offline fixture replay.
-- [ ] **FQA-2 — resolver semantics suite:** not started; depends on FQA-0 delivery.
+- [ ] **FQA-2 — resolver semantics suite:** implemented; awaiting merge readback.
+  Thirteen independent Quint witnesses replay against public Automata APIs; every witness
+  rejects a semantic mutation at step 1. Fragment contract tests cover two prefixed copies,
+  retained external targets and stale classifier refusal. Apalache 0.56.1 completed safety
+  checking through two transitions over the fixed six-node/thirteen-configuration domain.
+  [Evidence and bounds](../../examples/AutomataReplay/fixtures/resolver/bounded-check.json)
+  retain model/tool/backend digests and the exact command. General chart semantics and
+  runtime lifecycle remain outside this bounded result.
 - [ ] **FQA-3 — reusable adapter decision:** not started.
 - [ ] **FQA-4 — scenario generation and evidence:** not started.
 - [ ] **FQA-5 — pure correction conformance:** not started.
