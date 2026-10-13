@@ -33,10 +33,16 @@ module Replay =
         let oldLock = read (Path.Combine(target, "packages.lock.json"))
         runCommand "dotnet" (restore @ ["--force-evaluate"]) target environment 180 |> ignore
         let refreshed = read (Path.Combine(target, "packages.lock.json"))
-        prop (prop (prop oldLock "dependencies") "net10.0") "FsQuint" |> fun p -> p.AsObject().["contentHash"] <- jstr (str (prop (prop (prop (prop refreshed "dependencies") "net10.0") "FsQuint") "contentHash"))
-        ensure (JsonNode.DeepEquals(oldLock, refreshed)) "Dependency lock changed beyond the candidate FsQuint content hash"
-        let candidate = Path.Combine(root, "artifacts/packages/FsQuint.0.1.1.nupkg")
-        let restored = Path.Combine(target, "packages/fsquint/0.1.1/fsquint.0.1.1.nupkg")
+        let priorCandidate = prop (prop (prop oldLock "dependencies") "net10.0") "FsQuint"
+        let nextCandidate = prop (prop (prop refreshed "dependencies") "net10.0") "FsQuint"
+        ensure (str (prop nextCandidate "requested") = "[0.2.0, 0.2.0]" && str (prop nextCandidate "resolved") = "0.2.0") "Consumer did not select the exact 0.2.0 candidate"
+        // Only the selected candidate's version and genuine restored hash may change.
+        // Every other package, dependency edge and historical baseline stays exact.
+        for name in ["requested"; "resolved"; "contentHash"] do
+            priorCandidate.AsObject().[name] <- (prop nextCandidate name).DeepClone()
+        ensure (JsonNode.DeepEquals(oldLock, refreshed)) "Dependency lock changed beyond the selected FsQuint version and content hash"
+        let candidate = Path.Combine(root, "artifacts/packages/FsQuint.0.2.0.nupkg")
+        let restored = Path.Combine(target, "packages/fsquint/0.2.0/fsquint.0.2.0.nupkg")
         ensure (shaFile restored = shaFile candidate) "Consumer did not restore the exact candidate FsQuint package"
         runCommand "dotnet" (restore @ ["--locked-mode"]) target environment 180 |> ignore
         let checkPin (pin: JsonNode) =

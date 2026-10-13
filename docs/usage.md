@@ -44,10 +44,28 @@ without a shell. Supported: Linux x64, Quint 0.32.0, Rust backend for tests/samp
 Named tests need a positive executed count. Sample success needs the supported Quint
 result and trace-statistics markers. Counterexamples are distinct from incomplete,
 nonzero exit, timeout, cancellation, output overflow and identity failure. Typechecking
-uses Quint's exit contract and makes no replay/verification claim. Output limits apply
-to each invocation; the request deadline includes hashing and version selection.
-Owned process trees are terminated on cancellation/overflow on the qualified platform.
-This is not a sandbox against malicious executables or detached processes.
+uses Quint's exit contract and makes no replay/verification claim. Each invocation has
+its own shared stdout/stderr limit, charged as UTF8 bytes after BOM-aware decoding.
+Any positive `MaxOutputBytes` remains valid; version output has a separate counter.
+Process-session admission also requires executable and normalized working-directory
+paths of at most 2048 UTF8 bytes, and a combined executable, directory, argument and
+explicit environment request of at most 256 KiB. Larger requests return launch failure.
+These 0.2 admission limits narrow the earlier 0.1 wrapper's accepted requests. Child stdin is
+closed; the earlier 0.1 wrapper inherited it. Supported batch commands take source paths
+and arguments and do not receive interactive input through this API.
+The full requested work deadline starts before hashing and includes version selection
+and the command. Neither invocation renews it. Process cleanup observation has a
+separate one-second observation budget beyond that original work deadline. Cooperative
+scheduling and report materialization do not guarantee a strict wall-clock return time.
+
+Tree termination is best effort. Incomplete cleanup keeps the original session in a
+bounded local custody pool; a report never proves descendant emptiness or reaping.
+Positive results require complete output, settled local tasks and accepted resource
+release. Timeout, cancellation and output-limit causes survive incomplete cleanup.
+Sixteen unresolved invocations exhaust custody capacity; later invocations return a
+launch failure until a previously retained session can be released under its original
+budget. There is no detached cleanup worker or renewed deadline. This is not a sandbox
+against malicious executables or detached processes.
 
 Neither package downloads or installs tools itself. The external Quint process may
 attempt downloads if its evaluator is missing; offline users must provision both tools

@@ -52,6 +52,16 @@ type ToolReport =
 
 [<RequireQualifiedAccess>]
 module Quint =
-    /// Run a caller-provisioned, digest-checked Quint 0.32.0 on Linux x64.
-    /// Test/run outcomes require positive evidence; no verification claim is made.
+    /// <summary>Run caller-provisioned, digest-checked Quint 0.32.0 under the 0.2 bounded Linux x64 batch profile.</summary>
+    /// <param name="request">Executable and normalized working paths must each fit 2048 UTF8 bytes;
+    /// combined executable, directory, arguments and explicit environment metadata must fit 256 KiB.
+    /// Child stdin is closed. Any positive MaxOutputBytes bounds shared decoded stdout/stderr
+    /// separately per invocation. Timeout covers hashing, version selection and command work.</param>
+    /// <param name="cancellation">Caller cancellation; the original work deadline is never renewed.</param>
+    /// <returns>Positive test/run outcomes require complete evidence and accepted local resource release.</returns>
+    /// <remarks>Cleanup observation has a one-second budget beyond the full work deadline, without
+    /// a hard wall-clock return guarantee. Tree termination is best effort; up to sixteen unresolved
+    /// sessions retain local custody. Exhausted custody or request admission returns launch failure.
+    /// A version probe may precede workload refusal. Reports do not prove descendant emptiness,
+    /// reaping or verification. These request and stdin rules narrow the 0.1 wrapper's behavior.</remarks>
     val run: request: QuintRequest -> cancellation: CancellationToken -> Task<ToolReport>
