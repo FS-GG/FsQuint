@@ -368,7 +368,7 @@ if OperatingSystem.IsLinux() then
     try
         let fake = Path.Combine(scratch, "fake quint")
 
-        let runScript body timeout outputBytes =
+        let prepareScript body timeout outputBytes =
             File.WriteAllText(fake, "#!/bin/sh\nif [ \"$1\" = --version ]; then echo 0.32.0; exit 0; fi\n" + body)
             File.SetUnixFileMode(fake, UnixFileMode.UserRead ||| UnixFileMode.UserWrite ||| UnixFileMode.UserExecute)
 
@@ -389,7 +389,178 @@ if OperatingSystem.IsLinux() then
                     MaxOutputBytes = outputBytes
                 }
 
-            Quint.run request CancellationToken.None |> fun t -> t.GetAwaiter().GetResult()
+            request
+
+        let runScript body timeout outputBytes =
+            Quint.run (prepareScript body timeout outputBytes) CancellationToken.None
+            |> fun t -> t.GetAwaiter().GetResult()
+
+        // Output is a public compatibility contract: the cap is shared by both
+        // streams per invocation, and any positive caller-selected cap is valid.
+        // These finite shell-built-in fixtures need no Quint installation.
+        let emitAscii count channel =
+            let chunk = String.replicate 1000 "x"
+            sprintf "i=0; while [ $i -lt %d ]; do printf '%%s' '%s'%s; i=$((i + 1)); done\n" count chunk channel
+
+        let requireOutput label expectedOutput expectedError maxBytes body =
+            let observed = runScript body (TimeSpan.FromSeconds(5.0)) maxBytes
+            check (label + " outcome") (observed.Outcome = ToolOutcome.TestsPassed 1)
+            check (label + " complete stdout") (observed.StandardOutput = expectedOutput)
+            check (label + " complete stderr") (observed.StandardError = expectedError)
+
+        let marker = "\n1 passing\n"
+        requireOutput
+            "100000-byte stdout profile"
+            (String.replicate 99000 "x" + marker)
+            ""
+            100000
+            (emitAscii 99 "" + "printf '\\n1 passing\\n'\n")
+        requireOutput
+            "100000-byte stderr profile"
+            marker
+            (String.replicate 99000 "x")
+            100000
+            (emitAscii 99 " >&2" + "printf '\\n1 passing\\n'\n")
+        requireOutput
+            "100000-byte combined profile"
+            (String.replicate 49000 "x" + marker)
+            (String.replicate 49000 "x")
+            100000
+            (emitAscii 49 "" + emitAscii 49 " >&2" + "printf '\\n1 passing\\n'\n")
+        requireOutput
+            "100000-byte UTF8 profile"
+            (String.replicate 1000 "é🙂" + marker)
+            ""
+            100000
+            ("i=0; while [ $i -lt 1000 ]; do printf 'é🙂'; i=$((i + 1)); done\n"
+             + "printf '\\n1 passing\\n'\n")
+        requireOutput
+            "public cap above fixed capture allocation"
+            (String.replicate 300000 "x" + marker)
+            ""
+            400000
+            (emitAscii 300 "" + "printf '\\n1 passing\\n'\n")
+        requireOutput
+            "public stderr above fixed stream allocation"
+            marker
+            (String.replicate 300000 "x")
+            400000
+            (emitAscii 300 " >&2" + "printf '\\n1 passing\\n'\n")
+        check
+            "combined streams share one output limit"
+            ((runScript
+                (emitAscii 60 "" + emitAscii 60 " >&2" + "printf '\\n1 passing\\n'\n")
+                (TimeSpan.FromSeconds(5.0))
+                100000).Outcome = ToolOutcome.OutputLimit)
+
+        requireOutput
+            "UTF8 BOM excluded from decoded output charge"
+            marker
+            ""
+            11
+            "printf '\\357\\273\\277\n1 passing\n'\n"
+        requireOutput
+            "malformed UTF8 replacement retained"
+            ("�" + marker)
+            ""
+            14
+            "printf '\\377\n1 passing\n'\n"
+        requireOutput
+            "surrogate pairs across reader chunks retained"
+            (String.replicate 2049 "🙂" + marker)
+            ""
+            20000
+            ("i=0; while [ $i -lt 2049 ]; do printf '🙂'; i=$((i + 1)); done\n"
+             + "printf '\\n1 passing\\n'\n")
+
+        // The 0.2 batch profile intentionally narrows request admission. Record
+        // version and workload effects separately: a version probe can precede
+        // workload argument refusal, but neither path/cwd refusal launches it.
+        let profileEffects = Path.Combine(scratch, "profile.effects")
+        let quoteShell (value: string) = "'" + value.Replace("'", "'\\''") + "'"
+        let prepareProfile executable cwd =
+            let body =
+                "#!/bin/sh\nif [ \"$1\" = --version ]; then printf 'V\\n' >> "
+                + quoteShell profileEffects
+                + "; echo 0.32.0; exit 0; fi\nprintf 'C\\n' >> "
+                + quoteShell profileEffects
+                + "\nprintf '\\n1 passing\\n'\n"
+            File.WriteAllText(executable, body)
+            File.SetUnixFileMode(executable, UnixFileMode.UserRead ||| UnixFileMode.UserWrite ||| UnixFileMode.UserExecute)
+            { Executable = executable
+              Sha256 = Security.Cryptography.SHA256.HashData(File.ReadAllBytes executable) |> Convert.ToHexStringLower
+              Version = "0.32.0"
+              WorkingDirectory = cwd
+              Source = "test.qnt"
+              Module = "test"
+              Command = QuintCommand.Test "test"
+              Timeout = TimeSpan.FromSeconds 5.
+              MaxOutputBytes = 100000 }
+
+        let runProfile request =
+            File.Delete profileEffects
+            let result = Quint.run request CancellationToken.None |> fun t -> t.GetAwaiter().GetResult()
+            let effects = if File.Exists profileEffects then File.ReadAllText profileEffects else ""
+            result, effects
+
+        let directoryBytes target =
+            let mutable path = scratch
+            let mutable remaining = target - Text.Encoding.UTF8.GetByteCount path
+            while remaining > 201 do
+                // Leave at least two bytes for the final slash/component pair.
+                let componentBytes = min 200 (remaining - 3)
+                path <- Path.Combine(path, String.replicate componentBytes "d")
+                Directory.CreateDirectory path |> ignore
+                remaining <- target - Text.Encoding.UTF8.GetByteCount path
+            if remaining = 1 then invalidArg "target" "Directory byte target needs a slash and nonempty component."
+            if remaining > 0 then
+                path <- Path.Combine(path, String.replicate (remaining - 1) "d")
+                Directory.CreateDirectory path |> ignore
+            path
+
+        let withinPath = Path.Combine(directoryBytes 2043, "tool")
+        let outsidePath = Path.Combine(directoryBytes 2044, "tool")
+        check "fixture executable boundary is encoded bytes" (Text.Encoding.UTF8.GetByteCount withinPath = 2048 && Text.Encoding.UTF8.GetByteCount outsidePath = 2049)
+        let withinPathResult, withinPathEffects = runProfile (prepareProfile withinPath scratch)
+        check "2048-byte executable admitted" (withinPathResult.Outcome = ToolOutcome.TestsPassed 1 && withinPathEffects = "V\nC\n")
+        let outsidePathResult, outsidePathEffects = runProfile (prepareProfile outsidePath scratch)
+        check "2049-byte executable refused without probe" (match outsidePathResult.Outcome with ToolOutcome.LaunchFailure _ -> outsidePathEffects = "" | _ -> false)
+        let withinCwd = directoryBytes 2048
+        let outsideCwd = directoryBytes 2049
+        let withinCwdResult, withinCwdEffects = runProfile (prepareProfile fake withinCwd)
+        check "2048-byte cwd admitted" (withinCwdResult.Outcome = ToolOutcome.TestsPassed 1 && withinCwdEffects = "V\nC\n")
+        let outsideCwdResult, outsideCwdEffects = runProfile (prepareProfile fake outsideCwd)
+        check "2049-byte cwd refused without probe" (match outsideCwdResult.Outcome with ToolOutcome.LaunchFailure _ -> outsideCwdEffects = "" | _ -> false)
+
+        let unicodeCwd = Path.Combine(directoryBytes 2046, "é")
+        Directory.CreateDirectory unicodeCwd |> ignore
+        check "cwd boundary counts UTF8 rather than characters" (unicodeCwd.Length = 2048 && Text.Encoding.UTF8.GetByteCount unicodeCwd = 2049)
+        let unicodeCwdResult, unicodeCwdEffects = runProfile (prepareProfile fake unicodeCwd)
+        check "multibyte cwd beyond encoded limit refused" (match unicodeCwdResult.Outcome with ToolOutcome.LaunchFailure _ -> unicodeCwdEffects = "" | _ -> false)
+
+        let combinedBase = prepareProfile fake scratch
+        // Partition into three OS-valid arguments instead of exceeding Linux's
+        // per-argument bound while testing the producer's aggregate allowance.
+        let combinedBase = { combinedBase with Source = String.replicate 90000 "s"; Module = String.replicate 90000 "m" }
+        let requestBytes request pattern =
+            Text.Encoding.UTF8.GetByteCount request.Executable
+            + Text.Encoding.UTF8.GetByteCount request.WorkingDirectory
+            + ([ "test"; request.Source; "--main"; request.Module; "--match"; pattern; "--backend"; "rust" ]
+               |> List.sumBy (fun value -> Text.Encoding.UTF8.GetByteCount value + 1))
+            + Text.Encoding.UTF8.GetByteCount "NO_COLOR" + Text.Encoding.UTF8.GetByteCount "1" + 2
+        let pattern = String.replicate (256 * 1024 - requestBytes combinedBase "") "p"
+        check "fixture combined request is exact allowance" (requestBytes combinedBase pattern = 256 * 1024)
+        let withinRequestResult, withinRequestEffects = runProfile { combinedBase with Command = QuintCommand.Test pattern }
+        check "256-KiB combined request admitted" (withinRequestResult.Outcome = ToolOutcome.TestsPassed 1 && withinRequestEffects = "V\nC\n")
+        let outsideRequestResult, outsideRequestEffects = runProfile { combinedBase with Command = QuintCommand.Test(pattern + "p") }
+        check "combined request overflow refuses workload after probe" (match outsideRequestResult.Outcome with ToolOutcome.LaunchFailure _ -> outsideRequestEffects = "V\n" | _ -> false)
+
+        check
+            "batch stdin is closed"
+            ((runScript
+                "if IFS= read -r input; then echo 'unexpected input' >&2; exit 9; fi\nprintf '\\n1 passing\\n'\n"
+                (TimeSpan.FromSeconds 2.)
+                10000).Outcome = ToolOutcome.TestsPassed 1)
 
         check
             "exit zero without evidence rejected"
@@ -409,8 +580,123 @@ if OperatingSystem.IsLinux() then
                 =
                 ToolOutcome.OutputLimit)
 
+        // These lifecycle fixtures use the public Quint.run token and the same
+        // finite shell helper. Only recorded PID/starttime generations authorize
+        // fixture cleanup; a current process/group census is not ownership.
+        let processGeneration (stat: string) =
+            let closing = stat.LastIndexOf(')')
+            let pid = stat.Substring(0, stat.IndexOf(' ')) |> int
+            let fields = stat.Substring(closing + 2).Split(' ', StringSplitOptions.RemoveEmptyEntries)
+            pid, fields[19], fields[0]
+
+        let executingGeneration (pid, birth) =
+            try
+                let actualPid, actualBirth, state =
+                    File.ReadAllText(sprintf "/proc/%d/stat" pid) |> processGeneration
+                actualPid = pid && actualBirth = birth && state <> "Z" && state <> "X"
+            with
+            | :? FileNotFoundException
+            | :? DirectoryNotFoundException -> false
+
+        let waitUntil milliseconds predicate =
+            let elapsed = Diagnostics.Stopwatch.StartNew()
+            while not (predicate ()) && elapsed.ElapsedMilliseconds < int64 milliseconds do
+                Thread.Sleep 5
+            predicate ()
+
+        let retireRecordedChild statPath =
+            // No fresh enrollment or recursive kill. Transient/unrecorded or
+            // detached descendants remain outside this fixture's cleanup proof.
+            // Cleanup diagnostics cannot replace the first failed assertion.
+            try
+                if File.Exists statPath then
+                    let pid, birth, _ = File.ReadAllText statPath |> processGeneration
+                    if executingGeneration (pid, birth) then
+                        use child = Diagnostics.Process.GetProcessById pid
+                        if executingGeneration (pid, birth) then child.Kill()
+                    let retired = waitUntil 500 (fun () -> not (executingGeneration (pid, birth)))
+                    printfn "INFO fixture child PID %d birth %s retired: %b" pid birth retired
+                    retired
+                else
+                    printfn "INFO fixture child generation not recorded; cleanup unknown"
+                    false
+            with ex ->
+                printfn "INFO recorded fixture child cleanup unresolved: %s" (ex.GetType().Name)
+                false
+
+        let observeFixtureTask label (running: Task<ToolReport> option) =
+            // Observation shares the same suite window. Do not detach an await
+            // or replace the original assertion with a cleanup/task fault.
+            match running with
+            | None -> printfn "INFO %s task not started" label
+            | Some running ->
+                try
+                    running.Wait(500) |> ignore
+                with ex ->
+                    printfn "INFO %s task observation: %s" label (ex.GetType().Name)
+                printfn "INFO %s task terminal: %b status: %A" label running.IsCompleted running.Status
+
+        let lifecycleBody prefix tail =
+            "sleep 30 &\nchild=$!\nIFS= read -r child_stat < /proc/$child/stat\n"
+            + "printf '%s\\n' \"$child_stat\" > " + prefix + ".child.stat\n"
+            + "IFS= read -r leader_stat < /proc/$$/stat\n"
+            + "printf '%s\\n' \"$leader_stat\" > " + prefix + ".leader.stat\n"
+            + "printf '\\n1 passing\\n'\n: > " + prefix + ".ready\n" + tail
+
+        let cancellationStat = Path.Combine(scratch, "caller-cancel.child.stat")
+        let mutable cancellationRetired = false
+        let mutable cancellationTask: Task<ToolReport> option = None
+        let caller = new CancellationTokenSource()
+        try
+            let request =
+                prepareScript (lifecycleBody "caller-cancel" "wait\n") (TimeSpan.FromSeconds 5.) 10000
+            let running = Quint.run request caller.Token
+            cancellationTask <- Some running
+            check "Quint cancellation reaches actual workload"
+                (waitUntil 1000 (fun () -> File.Exists(Path.Combine(scratch, "caller-cancel.ready"))))
+            let childPid, childBirth, _ = File.ReadAllText cancellationStat |> processGeneration
+            check "Quint cancellation fixture child is executing" (executingGeneration (childPid, childBirth))
+            caller.Cancel()
+            check "Quint caller cancellation returns within observation allowance" (running.Wait(2000))
+            check "Quint caller token retains cancellation first cause" (running.Result.Outcome = ToolOutcome.Cancelled)
+        finally
+            // Dispose alone does not request cancellation on an early failure.
+            try caller.Cancel()
+            with ex -> printfn "INFO caller cleanup cancellation: %s" (ex.GetType().Name)
+            cancellationRetired <- retireRecordedChild cancellationStat
+            observeFixtureTask "caller-cancel" cancellationTask
+            try caller.Dispose()
+            with ex -> printfn "INFO caller cleanup disposal: %s" (ex.GetType().Name)
+        check "Quint cancellation known child retired" cancellationRetired
+
+        let heldPipeStat = Path.Combine(scratch, "held-pipe.child.stat")
+        let mutable heldPipeRetired = false
+        let mutable heldPipeTask: Task<ToolReport> option = None
+        try
+            let request =
+                prepareScript (lifecycleBody "held-pipe" "exit 0\n") (TimeSpan.FromSeconds 5.) 10000
+            let running = Quint.run request CancellationToken.None
+            heldPipeTask <- Some running
+            check "held pipe fixture reaches workload"
+                (waitUntil 1000 (fun () -> File.Exists(Path.Combine(scratch, "held-pipe.ready"))))
+            let leaderPid, leaderBirth, _ =
+                File.ReadAllText(Path.Combine(scratch, "held-pipe.leader.stat")) |> processGeneration
+            check "held pipe leader exits before work deadline"
+                (waitUntil 1000 (fun () -> not (executingGeneration (leaderPid, leaderBirth))))
+            let childPid, childBirth, _ = File.ReadAllText heldPipeStat |> processGeneration
+            check "held pipe recorded child remains executing" (executingGeneration (childPid, childBirth))
+            check "passing marker and leader exit cannot complete held pipe" (not running.IsCompleted)
+            check "held pipe observation returns within fixture allowance" (running.Wait(7000))
+            check "held pipe work deadline retains timeout first cause" (running.Result.Outcome = ToolOutcome.TimedOut)
+        finally
+            // Keep CancellationToken.None: cleanup closes the known held pipe;
+            // a late task may remain pending, which is retained as a diagnostic.
+            heldPipeRetired <- retireRecordedChild heldPipeStat
+            observeFixtureTask "held-pipe" heldPipeTask
+        check "held pipe known child retired by fixture" heldPipeRetired
+
         let timed =
-            runScript "sleep 30 &\necho $! > child.pid\nwait\n" (TimeSpan.FromMilliseconds(200.0)) 10000
+            runScript "sleep 30 &\necho $! > child.pid\nIFS= read -r child_stat < /proc/$!/stat\nprintf '%s\\n' \"$child_stat\" > child.stat\nwait\n" (TimeSpan.FromMilliseconds(200.0)) 10000
 
         check "process deadline" (timed.Outcome = ToolOutcome.TimedOut)
         let pid = File.ReadAllText(Path.Combine(scratch, "child.pid")).Trim() |> int
@@ -424,6 +710,8 @@ if OperatingSystem.IsLinux() then
             | :? FileNotFoundException
             | :? DirectoryNotFoundException -> false
 
+        printfn "INFO owned timeout child original generation: %s" (File.ReadAllText(Path.Combine(scratch, "child.stat")).Trim())
+        printfn "INFO owned timeout child still executing: %b" live
         check "owned child no longer executing" (not live)
     finally
         Directory.Delete(scratch, true)
