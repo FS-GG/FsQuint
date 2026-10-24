@@ -19,6 +19,7 @@ concurrency:
   cancel-in-progress: false
 jobs:
   publish:
+    name: publish [org-publication-writer]
     if: github.repository == 'FS-GG/FsQuint'
     runs-on: ubuntu-latest
     permissions:
@@ -26,6 +27,11 @@ jobs:
       packages: write
       id-token: write
     steps:
+      - name: Acquire org publication writer lock
+        uses: FS-GG/.github/.github/actions/publication-writer-lock@c799a9f9b21d52eb9766cf0950722e3e55145d39 # ADR-0097
+        with:
+          max-wait-minutes: 30
+        timeout-minutes: 32
       - uses: actions/checkout@v7
         with:
           fetch-depth: 0
