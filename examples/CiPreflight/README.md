@@ -29,7 +29,7 @@ run.
 
 ## Run the example
 
-From repository root, on Linux x64 with .NET SDK 10.0.401:
+From repository root, on Linux x64 with .NET SDK 10.0.403:
 
 ```bash
 bash eng/provision-quint.sh /tmp/fsquint-tools

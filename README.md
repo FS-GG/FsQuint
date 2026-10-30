@@ -125,7 +125,7 @@ Related Quint tools:
 
 ## Run repository checks
 
-Use SDK **10.0.401**, pinned in [global.json](global.json):
+Use SDK **10.0.403**, pinned in [global.json](global.json):
 
 ```sh
 dotnet run --project tests/FsQuint.Tests

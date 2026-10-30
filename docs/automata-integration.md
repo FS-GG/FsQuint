@@ -25,7 +25,7 @@ flowchart LR
 
 ## Start with committed traces
 
-From the repository root, using SDK 10.0.401:
+From the repository root, using SDK 10.0.403:
 
 ```sh
 dotnet pack src/FsQuint/FsQuint.fsproj -c Release -o artifacts/packages
