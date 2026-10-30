@@ -1,6 +1,6 @@
 # F# qualification commands
 
-Run from the repository root with SDK 10.0.401:
+Run from the repository root with SDK 10.0.403:
 
 ```sh
 dotnet run --project eng/Qualification/Qualification.fsproj -c Release -- selftest
