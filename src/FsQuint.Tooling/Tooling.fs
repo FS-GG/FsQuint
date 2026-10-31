@@ -8,6 +8,8 @@ open System.Text
 open System.Text.RegularExpressions
 open System.Threading
 open System.Threading.Tasks
+open FS.GG.Execution.Contracts
+open FS.GG.Execution.Processes
 
 [<RequireQualifiedAccess>]
 type QuintCommand =
@@ -52,98 +54,234 @@ type ToolReport =
 
 [<RequireQualifiedAccess>]
 module Quint =
-    let private execute path workingDirectory arguments timeout maxBytes (cancellation: CancellationToken) =
-        task {
-            use deadline = new CancellationTokenSource(timeout: TimeSpan)
+    type private SessionSlot =
+        | Vacant
+        | Claimed
+        | Retained of ITextProcessSession
 
-            use linked =
-                CancellationTokenSource.CreateLinkedTokenSource(cancellation, deadline.Token)
+    // Root-selected admission bound. No detached reaper or renewed budget.
+    let private custodyGate = obj()
+    let private custody = Array.create 16 Vacant
+    let private factory =
+        ProcessSessions.createTextFactoryWithRetirement RetirementPolicy.BestEffortProcessTree
 
-            use child = new Process()
-
-            let info =
-                ProcessStartInfo(
-                    path,
-                    UseShellExecute = false,
-                    RedirectStandardOutput = true,
-                    RedirectStandardError = true,
-                    WorkingDirectory = workingDirectory
-                )
-
-            for arg in arguments do
-                info.ArgumentList.Add(arg)
-
-            info.Environment["NO_COLOR"] <- "1"
-            child.StartInfo <- info
-            let mutable count = 0
-            let mutable overflow = false
-            let output = StringBuilder()
-            let errors = StringBuilder()
-
-            let read (reader: StreamReader) (builder: StringBuilder) =
-                task {
-                    let buffer = Array.zeroCreate<char> 1024
-                    let mutable more = true
-
-                    while more do
-                        let! size = reader.ReadAsync(buffer.AsMemory(), linked.Token)
-
-                        if size = 0 then
-                            more <- false
-                        else
-                            let bytes = Encoding.UTF8.GetByteCount(buffer, 0, size)
-
-                            if Interlocked.Add(&count, bytes) > maxBytes then
-                                overflow <- true
-                                linked.Cancel()
-                            else
-                                builder.Append(buffer, 0, size) |> ignore
-                }
-
-            let mutable started = false
+    let private releaseSlot slot (session: ITextProcessSession) =
+        lock custodyGate (fun () ->
+            let stillOwnsSlot () =
+                match custody[slot] with
+                | Retained current -> Object.ReferenceEquals(current, session)
+                | _ -> false
 
             try
-                started <- child.Start()
+                match session.TryRelease() with
+                | ResourcesReleased ->
+                    if stillOwnsSlot () then custody[slot] <- Vacant
+                    true
+                | ReleaseRefused _ ->
+                    if stillOwnsSlot () then custody[slot] <- Retained session
+                    false
+            with _ ->
+                if stillOwnsSlot () then custody[slot] <- Retained session
+                false)
 
-                if not started then
-                    return ToolOutcome.LaunchFailure "Process did not start.", "", ""
-                else
-                    let stdout = read child.StandardOutput output
-                    let stderr = read child.StandardError errors
+    let private claimSlot () =
+        lock custodyGate (fun () ->
+            for index in 0 .. custody.Length - 1 do
+                match custody[index] with
+                | Retained session -> releaseSlot index session |> ignore
+                | _ -> ()
+
+            match custody |> Array.tryFindIndex (function Vacant -> true | _ -> false) with
+            | Some index ->
+                custody[index] <- Claimed
+                Some index
+            | None -> None)
+
+    let private createRequestClock () =
+        let domain: ClockDomain = { Id = Guid.NewGuid(); Frequency = Stopwatch.Frequency }
+        { new IMonotonicClock with
+            member _.Now() = { Domain = domain; Ticks = Stopwatch.GetTimestamp() } }
+
+    let private executeText
+        path
+        workingDirectory
+        arguments
+        sourceDigest
+        ordinal
+        maxBytes
+        (clock: IMonotonicClock)
+        (originalBudget: ExecutionBudget)
+        (cancellation: CancellationToken)
+        =
+        task {
+            let remaining = Budget.remaining (clock.Now()) originalBudget
+
+            match remaining with
+            | Ok view when cancellation.IsCancellationRequested ->
+                return ToolOutcome.Cancelled, "", ""
+            | Ok view when view.WorkExpired ->
+                return ToolOutcome.TimedOut, "", ""
+            | Error _ ->
+                return ToolOutcome.LaunchFailure "Original process budget observation refused.", "", ""
+            | _ ->
+                match claimSlot () with
+                | None ->
+                    return
+                        ToolOutcome.LaunchFailure "Process custody capacity is occupied by unresolved invocations.", "", ""
+                | Some slot ->
+                    let mutable retained: ITextProcessSession option = None
+                    let mutable ownsSlot = true
+                    let mutable firstOutcome: ToolOutcome option = None
 
                     try
-                        do! Task.WhenAll(stdout, stderr, child.WaitForExitAsync(linked.Token))
-                        return ToolOutcome.Failed child.ExitCode, output.ToString(), errors.ToString()
-                    with :? OperationCanceledException ->
-                        if not child.HasExited then
-                            child.Kill(true)
-
-                        do! child.WaitForExitAsync()
-
                         try
-                            do! Task.WhenAll([| stdout :> Task; stderr :> Task |])
+                            let identity =
+                                { InvocationId = Guid.NewGuid()
+                                  Execution = None
+                                  LaunchOrdinal = ordinal
+                                  SourceDigest = sourceDigest
+                                  ProfileId = "fsquint-text-v1"
+                                  ProfileDigest =
+                                    SHA256.HashData(Encoding.UTF8.GetBytes "FsQuint.Tooling/text-v1/best-effort-tree")
+                                    |> Convert.ToHexStringLower }
+
+                            let owner =
+                                { OwnerId = "fsquint-" + identity.InvocationId.ToString("N")
+                                  Evidence =
+                                    { Kind = "local-session"
+                                      Reference = "fsquint:" + identity.InvocationId.ToString("D")
+                                      Digest = None } }
+
+                            // ProcessStartInfo previously accepted relative/default cwd. Normalize
+                            // that same choice instead of silently imposing a new absolute-path rule.
+                            let cwd =
+                                if String.IsNullOrEmpty workingDirectory then Directory.GetCurrentDirectory()
+                                else Path.GetFullPath workingDirectory
+
+                            let command: TextCommandSpec =
+                                { Executable = path
+                                  Arguments = arguments
+                                  WorkingDirectory = cwd
+                                  Environment = Inherit(Map.ofList [ "NO_COLOR", Some "1" ])
+                                  Input = Closed
+                                  TextCapture =
+                                    { MaximumDecodedUtf8Bytes = int64 maxBytes
+                                      TerminalReserveBytes = Validation.limits.FirstCauseReserveBytes }
+                                  Capabilities =
+                                    [ { Capability = BoundedReturnWithRetainedCustody; Required = true } ]
+                                  Resources =
+                                    { MemoryBytes = None
+                                      CpuQuota = None
+                                      CpuAffinity = None
+                                      MaxKernelTasks = None
+                                      MaxOwnedProcesses = None
+                                      MaxClrProcesses = None } }
+
+                            match factory.Prepare(command, identity, originalBudget, clock, owner) with
+                            | Error errors when errors |> List.exists (fun error -> error.Field = "budget") ->
+                                return ToolOutcome.TimedOut, "", ""
+                            | Error _ ->
+                                return ToolOutcome.LaunchFailure "Process session preparation refused.", "", ""
+                            | Ok session ->
+                                // Establish bounded in-process ownership before the sole Run call.
+                                retained <- Some session
+                                lock custodyGate (fun () -> custody[slot] <- Retained session)
+                                let! initial = session.RunAsync cancellation
+                                let rememberStop (result: TextExecutionResult) =
+                                    if firstOutcome.IsNone then
+                                        firstOutcome <-
+                                            match result.Process.Stop with
+                                            | Requested(OutputLimit, _) -> Some ToolOutcome.OutputLimit
+                                            | Requested(CallerCancellation, _) -> Some ToolOutcome.Cancelled
+                                            | Requested(WorkDeadline, _) -> Some ToolOutcome.TimedOut
+                                            | Requested _ | StopRefused _ -> Some ToolOutcome.Incomplete
+                                            | _ -> None
+
+                                rememberStop initial
+                                let mutable latest = initial
+                                let mutable observing = true
+
+                                let settled (result: TextExecutionResult) =
+                                    match result.Process.Cleanup.LocalTasks with
+                                    | Known(Settled, _) -> true
+                                    | _ -> false
+
+                                while observing do
+                                    let! observed = session.ObserveAsync cancellation
+                                    latest <- observed
+                                    rememberStop observed
+
+                                    if settled latest then
+                                        observing <- false
+                                    else
+                                        match Budget.clip (clock.Now()) Cleanup (TimeSpan.FromMilliseconds 5.) originalBudget with
+                                        | Ok delay when delay > TimeSpan.Zero -> do! Task.Delay delay
+                                        | _ -> observing <- false
+
+                                // Read the atomic process/text snapshot once more before release;
+                                // never use stale Run output to classify final EOF/limit/exit races.
+                                let! final = session.ObserveAsync cancellation
+                                rememberStop final
+                                let released = releaseSlot slot session
+                                if released then ownsSlot <- false
+                                let output = String.Concat(final.Text.Stdout.Chunks :> seq<string>)
+                                let errors = String.Concat(final.Text.Stderr.Chunks :> seq<string>)
+
+                                let stop =
+                                    match initial.Process.Stop with
+                                    | Requested _ as original -> original
+                                    | _ -> final.Process.Stop
+
+                                let eof (capture: TextStreamCapture) =
+                                    match capture.Reader with
+                                    | Known(Eof, _) -> true
+                                    | _ -> false
+
+                                let completeText =
+                                    final.Text.SnapshotComplete
+                                    && final.Text.FirstFailure.IsNone
+                                    && final.Text.Stdout.OmittedDecodedUtf8Bytes = 0L
+                                    && final.Text.Stderr.OmittedDecodedUtf8Bytes = 0L
+                                    && eof final.Text.Stdout
+                                    && eof final.Text.Stderr
+                                    && final.Process.FirstFailure.IsNone
+                                    && final.Process.Violations.IsEmpty
+
+                                let outcome =
+                                    match stop with
+                                    | Requested(OutputLimit, _) -> ToolOutcome.OutputLimit
+                                    | Requested(CallerCancellation, _) -> ToolOutcome.Cancelled
+                                    | Requested(WorkDeadline, _) -> ToolOutcome.TimedOut
+                                    | Requested _ | StopRefused _ -> ToolOutcome.Incomplete
+                                    | NotRequested ->
+                                        match final.Process.Launch with
+                                        | Refused diagnostic | Ambiguous diagnostic ->
+                                            ToolOutcome.LaunchFailure diagnostic.Message
+                                        | _ ->
+                                            match final.Process.Exit with
+                                            | Known(Exited code, _) when completeText && released && settled final ->
+                                                ToolOutcome.Failed code
+                                            | _ -> ToolOutcome.Incomplete
+
+                                return outcome, output, errors
                         with _ ->
-                            ()
-
-                        let status =
-                            if overflow then
-                                ToolOutcome.OutputLimit
-                            elif cancellation.IsCancellationRequested then
-                                ToolOutcome.Cancelled
-                            else
-                                ToolOutcome.TimedOut
-
-                        return status, output.ToString(), errors.ToString()
-            with ex ->
-                if started && not child.HasExited then
-                    child.Kill(true)
-                    do! child.WaitForExitAsync()
-
-                return ToolOutcome.LaunchFailure ex.Message, output.ToString(), errors.ToString()
+                            return
+                                Option.defaultValue (ToolOutcome.LaunchFailure "Process execution observation failed.") firstOutcome, "", ""
+                    finally
+                        if ownsSlot then
+                            match retained with
+                            | Some session -> releaseSlot slot session |> ignore
+                            | None -> lock custodyGate (fun () -> custody[slot] <- Vacant)
         }
 
     /// Linux x64, caller-provisioned Quint 0.32.0, Rust backend. Never downloads tools.
-    let private runInternal (request: QuintRequest) (cancellation: CancellationToken) =
+    let private runInternal
+        (request: QuintRequest)
+        (hashCancellation: CancellationToken)
+        (callerCancellation: CancellationToken)
+        (clock: IMonotonicClock)
+        (originalBudget: ExecutionBudget)
+        =
         task {
             let report status output errors =
                 {
@@ -168,19 +306,22 @@ module Quint =
             else
                 try
                     use stream = File.OpenRead request.Executable
-                    let! digest = SHA256.HashDataAsync(stream, cancellation)
+                    let! digest = SHA256.HashDataAsync(stream, hashCancellation)
 
                     if Convert.ToHexStringLower(digest) <> request.Sha256 then
                         return report ToolOutcome.IdentityMismatch "" ""
                     else
                         let! version, stdout, stderr =
-                            execute
+                            executeText
                                 request.Executable
                                 request.WorkingDirectory
                                 [ "--version" ]
-                                request.Timeout
+                                request.Sha256
+                                0UL
                                 request.MaxOutputBytes
-                                cancellation
+                                clock
+                                originalBudget
+                                callerCancellation
 
                         if version <> ToolOutcome.Failed 0 then
                             return report version stdout stderr
@@ -220,13 +361,16 @@ module Quint =
                                     ]
 
                             let! result, output, errors =
-                                execute
+                                executeText
                                     request.Executable
                                     request.WorkingDirectory
                                     args
-                                    request.Timeout
+                                    request.Sha256
+                                    1UL
                                     request.MaxOutputBytes
-                                    cancellation
+                                    clock
+                                    originalBudget
+                                    callerCancellation
 
                             let status =
                                 match result with
@@ -277,22 +421,46 @@ module Quint =
                         StandardError = ""
                     }
             else
-                use budget = new CancellationTokenSource(request.Timeout)
+                let clock = createRequestClock ()
+                let startedAt = clock.Now()
+                let cleanupGrace = TimeSpan.FromSeconds 1.
+                let totalTicks = bigint request.Timeout.Ticks + bigint cleanupGrace.Ticks
 
-                use linked =
-                    CancellationTokenSource.CreateLinkedTokenSource(cancellation, budget.Token)
-
-                let! report = runInternal request linked.Token
-
-                if
-                    report.Outcome = ToolOutcome.Cancelled
-                    && not cancellation.IsCancellationRequested
-                    && budget.IsCancellationRequested
-                then
+                if totalTicks > bigint Int64.MaxValue then
                     return
-                        { report with
-                            Outcome = ToolOutcome.TimedOut
-                        }
+                        { Outcome = ToolOutcome.LaunchFailure "Invalid process budget arithmetic."
+                          StandardOutput = ""
+                          StandardError = "" }
                 else
-                    return report
+                    let total = TimeSpan.FromTicks(int64 totalTicks)
+
+                    match Budget.create startedAt total cleanupGrace with
+                    | Error _ ->
+                        return
+                            { Outcome = ToolOutcome.LaunchFailure "Original process budget preparation refused."
+                              StandardOutput = ""
+                              StandardError = "" }
+                    | Ok originalBudget ->
+                        // Hash cancellation uses the already-started work window. Session
+                        // calls receive only caller cancellation; the producer owns work expiry
+                        // and must preserve an on-time completion observed after that expiry.
+                        use workTimeout = new CancellationTokenSource()
+
+                        match Budget.remaining (clock.Now()) originalBudget with
+                        | Ok view when not view.WorkExpired -> workTimeout.CancelAfter view.WorkRemaining
+                        | _ -> workTimeout.Cancel()
+
+                        use linked =
+                            CancellationTokenSource.CreateLinkedTokenSource(cancellation, workTimeout.Token)
+
+                        let! report = runInternal request linked.Token cancellation clock originalBudget
+
+                        if
+                            report.Outcome = ToolOutcome.Cancelled
+                            && not cancellation.IsCancellationRequested
+                            && workTimeout.IsCancellationRequested
+                        then
+                            return { report with Outcome = ToolOutcome.TimedOut }
+                        else
+                            return report
         }

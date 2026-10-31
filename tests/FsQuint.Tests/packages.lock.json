@@ -8,6 +8,23 @@
         "resolved": "10.1.401",
         "contentHash": "/lvOK51KD8IangBYkfDVna3/HrE/r4VUnX3dI01KDspctoYXmind3POeoYkqWKeXHwiKlf6Hc9TxwSnoSCWcjw=="
       },
+      "FS.GG.Execution.Contracts": {
+        "type": "Transitive",
+        "resolved": "0.3.1",
+        "contentHash": "kFuDtshyQFE/Lq43Ik6/mWw3rPgbc8Q67b10ifg3eD667yD4rdRhEbeo1xUb6HKqjOww1wcTF0wsUZWmMZ1w2A==",
+        "dependencies": {
+          "FSharp.Core": "10.1.302"
+        }
+      },
+      "FS.GG.Execution.Processes": {
+        "type": "Transitive",
+        "resolved": "0.3.1",
+        "contentHash": "/RCvc4rk1uvJ44NzAWbnlY5p92V0Go6Ds8/NkaQPHaOqAo/jo5vZyQYf9Tuq0d56kQ0V+zrkT4AvN4HujAAmLw==",
+        "dependencies": {
+          "FS.GG.Execution.Contracts": "0.3.1",
+          "FSharp.Core": "10.1.302"
+        }
+      },
       "fsquint": {
         "type": "Project",
         "dependencies": {
@@ -17,8 +34,10 @@
       "fsquint.tooling": {
         "type": "Project",
         "dependencies": {
+          "FS.GG.Execution.Contracts": "[0.3.1, 0.3.1]",
+          "FS.GG.Execution.Processes": "[0.3.1, 0.3.1]",
           "FSharp.Core": "[10.1.401, )",
-          "FsQuint": "[0.1.0, )"
+          "FsQuint": "[0.2.0, )"
         }
       }
     }

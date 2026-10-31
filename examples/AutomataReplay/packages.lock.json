@@ -32,9 +32,9 @@
       },
       "FsQuint": {
         "type": "Direct",
-        "requested": "[0.1.1, 0.1.1]",
-        "resolved": "0.1.1",
-        "contentHash": "9YrFWuSkfpbZ+0GflQHE8x+gSlInc412mVvdcGWQTG7IXaKAHDTtTtl64SM3vsHXxQ1MflgD6sR0NaJ5TiM+tQ==",
+        "requested": "[0.2.0, 0.2.0]",
+        "resolved": "0.2.0",
+        "contentHash": "IoFcv+Vpy7EHciOhggxCP+846ljP7wBndMpLzkGGJTEDaxMuu36uJE+8Z6M9/Ssy1MwNQRoCs+fOZzQOP8Sbvw==",
         "dependencies": {
           "FSharp.Core": "10.1.401"
         }

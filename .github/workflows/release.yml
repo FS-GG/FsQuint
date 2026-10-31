@@ -50,7 +50,7 @@ jobs:
           [[ "$READBACK_VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[A-Za-z0-9.-]+)?$ ]]
           source_head=$(git rev-parse "refs/tags/v$READBACK_VERSION^{commit}")
           dotnet run --project eng/Qualification/Qualification.fsproj -c Release -- readback "$READBACK_VERSION" "$source_head"
-          bash eng/public-example.sh "$READBACK_VERSION"
+          bash eng/public-example.sh "[$READBACK_VERSION]"
       - name: NuGet trusted publishing identity
         id: nuget
         if: inputs.readback_version == ''
@@ -86,7 +86,7 @@ jobs:
         run: dotnet run --project eng/Qualification/Qualification.fsproj -c Release -- readback "${GITHUB_REF_NAME#v}"
       - name: Anonymous public package example
         if: github.event_name == 'push'
-        run: bash eng/public-example.sh
+        run: bash eng/public-example.sh "[${GITHUB_REF_NAME#v}]"
       - uses: actions/upload-artifact@v7
         if: always() && (github.event_name == 'push' || inputs.readback_version != '')
         with:
