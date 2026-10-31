@@ -4,20 +4,20 @@
     "net10.0": {
       "FS.GG.Execution.Contracts": {
         "type": "Direct",
-        "requested": "[0.3.0, 0.3.0]",
-        "resolved": "0.3.0",
-        "contentHash": "5Uk3h5G0pO8frMCNaoaulEaEJVhul+/zAd8sbVck2wLKg1/Qfas1XA/INIcvrRGbkiRrGk7QBGpBXovsvqxlAg==",
+        "requested": "[0.3.1, 0.3.1]",
+        "resolved": "0.3.1",
+        "contentHash": "kFuDtshyQFE/Lq43Ik6/mWw3rPgbc8Q67b10ifg3eD667yD4rdRhEbeo1xUb6HKqjOww1wcTF0wsUZWmMZ1w2A==",
         "dependencies": {
           "FSharp.Core": "10.1.302"
         }
       },
       "FS.GG.Execution.Processes": {
         "type": "Direct",
-        "requested": "[0.3.0, 0.3.0]",
-        "resolved": "0.3.0",
-        "contentHash": "3G49Xut4ksortNlGm1EamMgLVr49VIeoud79X1zA/Od+A5v4CPy9tKgTZq9OKPFAVSUMbk08XFAHt3sGvf1N+A==",
+        "requested": "[0.3.1, 0.3.1]",
+        "resolved": "0.3.1",
+        "contentHash": "/RCvc4rk1uvJ44NzAWbnlY5p92V0Go6Ds8/NkaQPHaOqAo/jo5vZyQYf9Tuq0d56kQ0V+zrkT4AvN4HujAAmLw==",
         "dependencies": {
-          "FS.GG.Execution.Contracts": "0.3.0",
+          "FS.GG.Execution.Contracts": "0.3.1",
           "FSharp.Core": "10.1.302"
         }
       },
