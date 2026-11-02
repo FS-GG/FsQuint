@@ -1,0 +1,29 @@
+# closing-keywords: refuse a pull request whose title or body would auto-close an issue it says it does not close.
+#
+# GitHub binds `close|fix|resolve` (and their other forms) followed by an issue reference and ignores every word around
+# it, "not" included, so "does not close #N" closes #N on merge. FS.GG.FourD#56 and FS.GG.SC2.Client#52 did exactly that
+# on 2026-11-01. The rule is the organization hub's, fetched at the commit of the workflow called below, so this repository
+# carries no copy that can go stale. Write `Refs #N` to link without closing.
+#
+# `edited` re-checks a retitle or a body edit. `pull-requests: read` lets the job read the live title and body instead of
+# replaying a stale event payload on a re-run. Context: `closing-keywords / title-and-body`. See
+# docs/coordination/reusable-workflow-contract.md in FS-GG/.github (FS-GG/.github#5195).
+name: closing-keywords
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, edited]
+
+permissions:
+  contents: read
+  pull-requests: read
+
+# Head-keyed (FS-GG/.github#5159): a head action cancels the superseded head's run; a body edit keys on its own run id
+# so it never cancels the head run for the same head.
+concurrency:
+  group: closing-keywords-${{ contains(fromJSON('["opened","synchronize","reopened"]'), github.event.action) && github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  closing-keywords:
+    uses: FS-GG/.github/.github/workflows/closing-keywords-receiver.yml@main
