@@ -26,17 +26,17 @@
       },
       "FSharp.Core": {
         "type": "Direct",
-        "requested": "[10.1.401, )",
-        "resolved": "10.1.401",
-        "contentHash": "/lvOK51KD8IangBYkfDVna3/HrE/r4VUnX3dI01KDspctoYXmind3POeoYkqWKeXHwiKlf6Hc9TxwSnoSCWcjw=="
+        "requested": "[10.1.403, )",
+        "resolved": "10.1.403",
+        "contentHash": "SpKxPt90eSC3pfSKGLnSyucXXKVWokv1KVMTy2uQG36seOgJg14qUxjlcaWjZNWgxJtG5MeH9WpI6PQg4OR4tA=="
       },
       "FsQuint": {
         "type": "Direct",
         "requested": "[0.2.0, 0.2.0]",
         "resolved": "0.2.0",
-        "contentHash": "IoFcv+Vpy7EHciOhggxCP+846ljP7wBndMpLzkGGJTEDaxMuu36uJE+8Z6M9/Ssy1MwNQRoCs+fOZzQOP8Sbvw==",
+        "contentHash": "+r90bTNgzScPQ6xy6HQNRAo9d74BkX6g/EYw1zNmeTkZE1O22hr8EJX0X/2X16fRU7RhWFx0OXIhH9GdJJVY6g==",
         "dependencies": {
-          "FSharp.Core": "10.1.401"
+          "FSharp.Core": "10.1.403"
         }
       },
       "ByzantineSystems.Automata.Resilience": {
